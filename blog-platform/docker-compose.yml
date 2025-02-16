@@ -1,0 +1,15 @@
+services:
+  postgres-db:
+    image: postgres:latest
+    container_name: blog-platform
+    environment:
+      POSTGRES_DB: blog-platform
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: springbootstudent
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_db:/var/lib/postgresql/data
+
+volumes:
+  postgres_db:
