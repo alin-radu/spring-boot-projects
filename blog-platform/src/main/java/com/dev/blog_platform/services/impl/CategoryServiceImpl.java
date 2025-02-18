@@ -33,6 +33,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         return categoryRepository.save(category);
     }
+
     @Override
     public void deleteCategory(UUID categoryId) {
         Optional<Category> category = categoryRepository.findById(categoryId);

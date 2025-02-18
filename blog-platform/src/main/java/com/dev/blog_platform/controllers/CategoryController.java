@@ -1,6 +1,6 @@
 package com.dev.blog_platform.controllers;
 
-import com.dev.blog_platform.domain.dtos.CategoryDto;
+import com.dev.blog_platform.domain.dtos.CategoryResponseDto;
 import com.dev.blog_platform.domain.dtos.CreateCategoryRequestDto;
 import com.dev.blog_platform.domain.entities.Category;
 import com.dev.blog_platform.mappers.CategoryMapper;
@@ -23,23 +23,24 @@ public class CategoryController {
     private final CategoryMapper categoryMapper;
 
     @GetMapping
-    public ResponseEntity<List<CategoryDto>> findAllCategories() {
-        List<CategoryDto> categoriesDto = categoryService.findAllCategoriesWithPostCount().stream()
-                .map(categoryMapper::toDto)
-                .toList();
+    public ResponseEntity<List<CategoryResponseDto>> findAllCategories() {
+        List<CategoryResponseDto> categoriesResponseDto =
+                categoryService.findAllCategoriesWithPostCount().stream()
+                        .map(categoryMapper::toCategoryResponseDto)
+                        .toList();
 
-        return ResponseEntity.ok(categoriesDto);
+        return ResponseEntity.ok(categoriesResponseDto);
 
     }
 
     @PostMapping
-    public ResponseEntity<CategoryDto> createCategory(
+    public ResponseEntity<CategoryResponseDto> createCategory(
             @Valid @RequestBody CreateCategoryRequestDto createCategoryRequestDto) {
-        Category categoryToCreate = categoryMapper.toEntity(createCategoryRequestDto);
+        Category categoryToCreate = categoryMapper.toCategoryEntity(createCategoryRequestDto);
         Category savedCategory = categoryService.createCategory(categoryToCreate);
 
         return new ResponseEntity<>(
-                categoryMapper.toDto(savedCategory),
+                categoryMapper.toCategoryResponseDto(savedCategory),
                 HttpStatus.CREATED
         );
     }

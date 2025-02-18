@@ -34,6 +34,7 @@ public class Tag {
         Tag tag = (Tag) o;
         return Objects.equals(id, tag.id) && Objects.equals(name, tag.name);
     }
+
     @Override
     public int hashCode() {
         return Objects.hash(id, name);
