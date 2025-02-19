@@ -3,12 +3,12 @@ package com.dev.blog_platform.services.impl;
 import com.dev.blog_platform.domain.entities.Category;
 import com.dev.blog_platform.repositories.CategoryRepository;
 import com.dev.blog_platform.services.CategoryService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -36,14 +36,31 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteCategory(UUID categoryId) {
-        Optional<Category> category = categoryRepository.findById(categoryId);
 
-        if (category.isPresent()) {
-            if (!category.get().getPosts().isEmpty()) {
-                throw new IllegalStateException("Category has posts associated with it.");
-            }
+        // v1
+        categoryRepository.findById(categoryId).ifPresent(tag -> {
+                    if (!tag.getPosts().isEmpty()) {
+                        throw new IllegalStateException("Category has posts associated with it.");
+                    }
+                    categoryRepository.deleteById(categoryId);
+                }
+        );
 
-            categoryRepository.deleteById(categoryId);
-        }
+        // v2
+//        Optional<Category> category = categoryRepository.findById(categoryId);
+//        if (category.isPresent()) {
+//            if (!category.get().getPosts().isEmpty()) {
+//                throw new IllegalStateException("Category has posts associated with it.");
+//            }
+//
+//            categoryRepository.deleteById(categoryId);
+//        }
+    }
+
+    @Override
+    public Category findCategoryById(UUID categoryId) {
+
+        return categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new EntityNotFoundException("Category not found with id " + categoryId));
     }
 }
