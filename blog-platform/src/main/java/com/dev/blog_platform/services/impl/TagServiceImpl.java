@@ -55,7 +55,7 @@ public class TagServiceImpl implements TagService {
 
         // v1
         tagRepository.findById(tagId).ifPresent(tag -> {
-            if (tag.getPosts().isEmpty()) {
+            if (!tag.getPosts().isEmpty()) {
                 throw new IllegalStateException("Tag has posts associated with it.");
             }
 
@@ -77,6 +77,16 @@ public class TagServiceImpl implements TagService {
     public Tag findTagById(UUID tagId) {
 
         return tagRepository.findById(tagId)
-                .orElseThrow(() -> new EntityNotFoundException("Tag not found with id: " + tagId));
+                .orElseThrow(() -> new EntityNotFoundException("Tag not found with id: " + tagId + "."));
+    }
+
+    @Override
+    public List<Tag> findTagByIds(Set<UUID> ids) {
+        List<Tag> foundTags = tagRepository.findAllById(ids);
+        if (foundTags.size() != ids.size()) {
+            throw new EntityNotFoundException("Not all specified tag IDs exist.");
+        }
+
+        return foundTags;
     }
 }

@@ -77,8 +77,22 @@ public class Post {
         Post post = (Post) o;
         return Objects.equals(id, post.id) && Objects.equals(title, post.title) && Objects.equals(content, post.content) && status == post.status && Objects.equals(readingTime, post.readingTime) && Objects.equals(createdDate, post.createdDate) && Objects.equals(updatedDate, post.updatedDate);
     }
+
     @Override
     public int hashCode() {
         return Objects.hash(id, title, content, status, readingTime, createdDate, updatedDate);
+    }
+
+    @Override
+    public String toString() {
+        return "Post{" +
+                "createdDate=" + createdDate +
+                ", updatedDate=" + updatedDate +
+                ", id=" + id +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", status=" + status +
+                ", readingTime=" + readingTime +
+                '}';
     }
 }

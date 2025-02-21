@@ -4,6 +4,7 @@ import com.dev.blog_platform.domain.PostStatus;
 import com.dev.blog_platform.domain.entities.Category;
 import com.dev.blog_platform.domain.entities.Post;
 import com.dev.blog_platform.domain.entities.Tag;
+import com.dev.blog_platform.domain.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -20,4 +21,6 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
             PostStatus status, Tag tag);
 
     List<Post> findAllByStatus(PostStatus status);
+
+    List<Post> findAllByAuthorAndStatus(User author, PostStatus status);
 }
