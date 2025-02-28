@@ -14,7 +14,6 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
-    // Cross Origin Requests, allow all requests only from http://localhost:3000/
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         String LOCAL_HOST = "http://localhost:5173";

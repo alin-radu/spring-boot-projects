@@ -3,6 +3,7 @@ package com.dev.task_tracker.controller;
 import com.dev.task_tracker.domain.dto.TaskDto;
 import com.dev.task_tracker.domain.entities.Task;
 import com.dev.task_tracker.mappers.TaskMapper;
+import com.dev.task_tracker.repositories.TaskListRepository;
 import com.dev.task_tracker.services.TaskService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +17,18 @@ public class TaskController {
 
     private final TaskService taskService;
     private final TaskMapper taskMapper;
-    public TaskController(TaskService taskService, TaskMapper taskMapper) {
+    private final TaskListRepository taskListRepository;
+    public TaskController(TaskService taskService, TaskMapper taskMapper, TaskListRepository taskListRepository) {
         this.taskService = taskService;
         this.taskMapper = taskMapper;
+        this.taskListRepository = taskListRepository;
+    }
+
+    @PostMapping
+    TaskDto createTask(@PathVariable("taskListId") UUID taskListId, @RequestBody TaskDto taskDto) {
+        Task taskCreated = taskService.createTask(taskListId, taskMapper.fromDto(taskDto));
+
+        return taskMapper.toDto(taskCreated);
     }
 
     @GetMapping
@@ -29,19 +39,16 @@ public class TaskController {
                 .toList();
     }
 
-    @PostMapping
-    TaskDto createTask(@PathVariable("taskListId") UUID taskListId, @RequestBody TaskDto taskDto) {
-        Task taskCreated = taskService.createTask(taskListId, taskMapper.fromDto(taskDto));
-
-        return taskMapper.toDto(taskCreated);
-    }
-
     @GetMapping("/{taskId}")
     public ResponseEntity<TaskDto> getTaskById(
             @PathVariable("taskListId") UUID taskListId,
             @PathVariable("taskId") UUID taskId
     ) {
-        return taskService.getTaskById(taskListId, taskId)
+        if (!taskListRepository.existsById(taskListId)) {
+            throw new IllegalArgumentException("Task List not found with the id: " + taskListId);
+        }
+
+        return taskService.getTaskById(taskId)
                 .map(taskMapper::toDto)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());

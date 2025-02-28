@@ -30,6 +30,7 @@ public class Task {
     @Column(name = "priority", nullable = false)
     private TaskPriority priority;
 
+    // many Task can have/to one TaskList
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_list_id")
     private TaskList taskList;

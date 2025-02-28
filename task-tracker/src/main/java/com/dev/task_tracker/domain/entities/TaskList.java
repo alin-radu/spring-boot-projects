@@ -13,7 +13,7 @@ public class TaskList {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", updatable = false, nullable = false)
+    @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
 
     @Column(name = "title", nullable = false)
@@ -22,7 +22,8 @@ public class TaskList {
     @Column(name = "description")
     private String description;
 
-    // mappedBy:"look at the instance variable taskList on the task class for more info"
+    // one TaskList can have/to Many Task
+    // mappedBy:"look at the instance variable taskList on the Task class for more info"
     @OneToMany(mappedBy = "taskList",
             cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
     private List<Task> tasks;

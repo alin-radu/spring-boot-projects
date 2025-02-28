@@ -22,6 +22,13 @@ public class TaskListController {
         this.taskListMapper = taskListMapper;
     }
 
+    @PostMapping
+    public TaskListDto createTaskList(@RequestBody TaskListDto taskListDto) {
+        TaskList createdTask = taskListService.createTaskList(taskListMapper.fromDto(taskListDto));
+
+        return taskListMapper.toDto(createdTask);
+    }
+
     @GetMapping
     public List<TaskListDto> getTaskLists() {
 
@@ -31,17 +38,10 @@ public class TaskListController {
                 .toList();
     }
 
-    @PostMapping
-    public TaskListDto createTaskList(@RequestBody TaskListDto taskListDto) {
-        TaskList createdTask = taskListService.createTaskList(taskListMapper.fromDto(taskListDto));
-
-        return taskListMapper.toDto(createdTask);
-    }
-
     @GetMapping("/{taskListId}")
     public ResponseEntity<TaskListDto> getTaskListById(@PathVariable("taskListId") UUID taskListId) {
 
-        return taskListService.getTaskList(taskListId)
+        return taskListService.getTaskListById(taskListId)
                 .map(taskListMapper::toDto)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());

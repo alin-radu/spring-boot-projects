@@ -22,11 +22,6 @@ public class TaskListServiceImpl implements TaskListService {
     }
 
     @Override
-    public List<TaskList> getTaskLists() {
-        return taskListRepository.findAll();
-    }
-
-    @Override
     public TaskList createTaskList(TaskList taskList) {
         if (taskList.getId() != null) {
             throw new IllegalArgumentException("Task list already has na ID!");
@@ -49,8 +44,14 @@ public class TaskListServiceImpl implements TaskListService {
                 )
         );
     }
+
     @Override
-    public Optional<TaskList> getTaskList(UUID id) {
+    public List<TaskList> getTaskLists() {
+        return taskListRepository.findAll();
+    }
+
+    @Override
+    public Optional<TaskList> getTaskListById(UUID id) {
         return taskListRepository.findById(id);
     }
 

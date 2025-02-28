@@ -28,14 +28,6 @@ public class TaskServiceImpl implements TaskService {
         this.taskListRepository = taskListRepository;
     }
 
-    @Override
-    public List<Task> getTasksByTaskListId(UUID taskListId) {
-        if (taskListRepository.findById(taskListId).isEmpty()) {
-            throw new ItemNotFoundException();
-        }
-        return taskRepository.findByTaskListId(taskListId);
-    }
-
     @Transactional
     @Override
     public Task createTask(UUID taskListId, Task task) {
@@ -51,7 +43,8 @@ public class TaskServiceImpl implements TaskService {
         TaskList taskList = taskListRepository.findById(taskListId)
                 .orElseThrow(ItemNotFoundException::new);
 
-        TaskPriority taskPriority = Optional.ofNullable(task.getPriority()).orElseGet(() -> TaskPriority.MEDIUM);
+        TaskPriority taskPriority = Optional.ofNullable(task.getPriority())
+                .orElse(TaskPriority.MEDIUM);
         TaskStatus taskStatus = TaskStatus.OPEN;
 
         LocalDateTime now = LocalDateTime.now();
@@ -75,7 +68,21 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Optional<Task> getTaskById(UUID taskListId, UUID taskId) {
+    public List<Task> getTasksByTaskListId(UUID taskListId) {
+        if (!taskListRepository.existsById(taskListId)) {
+            throw new ItemNotFoundException();
+        }
+
+        return taskRepository.findByTaskListId(taskListId);
+    }
+
+    @Override
+    public Optional<Task> getTaskById(UUID taskId) {
+        return taskRepository.findById(taskId);
+    }
+
+    @Override
+    public Optional<Task> getTaskByTaskListIdAndId(UUID taskListId, UUID taskId) {
         return taskRepository.findByTaskListIdAndId(taskListId, taskId);
     }
 
@@ -98,7 +105,7 @@ public class TaskServiceImpl implements TaskService {
             throw new IllegalArgumentException("Task must have a valid status!");
         }
 
-        Task existingTask = getTaskById(taskListId, taskId)
+        Task existingTask = getTaskById(taskId)
                 .orElseThrow(ItemNotFoundException::new);
 
         existingTask.setTitle(task.getTitle());
@@ -114,7 +121,7 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     @Override
     public void deleteByTaskListIdAndId(UUID taskListId, UUID taskId) {
-        if (getTaskById(taskListId, taskId).isEmpty()) {
+        if (taskRepository.existsById(taskId)) {
             throw new ItemNotFoundException();
         }
 
