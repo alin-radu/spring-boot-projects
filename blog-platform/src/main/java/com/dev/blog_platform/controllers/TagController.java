@@ -22,17 +22,7 @@ public class TagController {
     private final TagService tagService;
     private final TagMapper tagMapper;
 
-    @GetMapping
-    public ResponseEntity<List<TagResponseDto>> findAllTags() {
-
-        List<TagResponseDto> tagsResponseDto =
-                tagService.findAllTagsWithPostCount().stream()
-                        .map(tagMapper::toTagResponseDto)
-                        .toList();
-
-        return ResponseEntity.ok(tagsResponseDto);
-    }
-
+    // CREATE
     @PostMapping
     public ResponseEntity<List<TagResponseDto>> createTags(
             @Valid @RequestBody CreateTagsRequestDto createTagsRequestDto
@@ -46,6 +36,19 @@ public class TagController {
         return ResponseEntity.ok(tagsResponseDto);
     }
 
+    // READ
+    @GetMapping
+    public ResponseEntity<List<TagResponseDto>> findAllTags() {
+
+        List<TagResponseDto> tagsResponseDto =
+                tagService.findAllTagsWithPostCount().stream()
+                        .map(tagMapper::toTagResponseDto)
+                        .toList();
+
+        return ResponseEntity.ok(tagsResponseDto);
+    }
+
+    // DELETE
     @DeleteMapping(path = "/{tagId}")
     public ResponseEntity<Void> deleteTag(@PathVariable UUID tagId) {
         tagService.deleteTag(tagId);
@@ -54,5 +57,4 @@ public class TagController {
                 HttpStatus.NO_CONTENT
         );
     }
-
 }

@@ -22,17 +22,7 @@ public class CategoryController {
     private final CategoryService categoryService;
     private final CategoryMapper categoryMapper;
 
-    @GetMapping
-    public ResponseEntity<List<CategoryResponseDto>> findAllCategories() {
-        List<CategoryResponseDto> categoriesResponseDto =
-                categoryService.findAllCategoriesWithPostCount().stream()
-                        .map(categoryMapper::toCategoryResponseDto)
-                        .toList();
-
-        return ResponseEntity.ok(categoriesResponseDto);
-
-    }
-
+    // CREATE
     @PostMapping
     public ResponseEntity<CategoryResponseDto> createCategory(
             @Valid @RequestBody CreateCategoryRequestDto createCategoryRequestDto) {
@@ -45,6 +35,19 @@ public class CategoryController {
         );
     }
 
+    // READ
+    @GetMapping
+    public ResponseEntity<List<CategoryResponseDto>> findAllCategories() {
+        List<CategoryResponseDto> categoriesResponseDto =
+                categoryService.findAllCategoriesWithPostCount().stream()
+                        .map(categoryMapper::toCategoryResponseDto)
+                        .toList();
+
+        return ResponseEntity.ok(categoriesResponseDto);
+
+    }
+
+    // DELETE
     @DeleteMapping(path = "/{categoryId}")
     public ResponseEntity<Void> deleteCategory(@PathVariable UUID categoryId) {
         categoryService.deleteCategory(categoryId);

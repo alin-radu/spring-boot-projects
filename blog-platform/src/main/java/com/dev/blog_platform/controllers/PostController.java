@@ -28,30 +28,7 @@ public class PostController {
     private final UserService userService;
     private final PostMapper postMapper;
 
-    @GetMapping
-    public ResponseEntity<List<PostResponseDto>> findAllPosts(
-            @RequestParam(required = false) UUID categoryId,
-            @RequestParam(required = false) UUID tagId
-    ) {
-        List<PostResponseDto> postResponse = postService.findAll(categoryId, tagId).stream()
-                .map(postMapper::toPostResponseDto).toList();
-
-        return ResponseEntity.ok(postResponse);
-    }
-
-    @GetMapping(path = "/drafts")
-    public ResponseEntity<List<PostResponseDto>> findAllDrafts(@RequestAttribute UUID userId) {
-        User loggedInUser = userService.findUserById(userId);
-
-        List<Post> draftPostsByUser = postService.findAllDraftPostsByUser(loggedInUser);
-
-        List<PostResponseDto> postResponseDto = draftPostsByUser.stream()
-                .map(postMapper::toPostResponseDto)
-                .toList();
-
-        return ResponseEntity.ok(postResponseDto);
-    }
-
+    // CREATE
     @PostMapping
     public ResponseEntity<PostResponseDto> createPost(
             @Valid @RequestBody CreatePostRequestDto createPostRequestDto,
@@ -66,6 +43,31 @@ public class PostController {
         return ResponseEntity.ok(postMapper.toPostResponseDto(savedPost));
     }
 
+    // READ
+    @GetMapping(path = "/drafts")
+    public ResponseEntity<List<PostResponseDto>> findAllDrafts(@RequestAttribute UUID userId) {
+        User loggedInUser = userService.findUserById(userId);
+
+        List<Post> draftPostsByUser = postService.findAllDraftPostsByUser(loggedInUser);
+
+        List<PostResponseDto> postResponseDto = draftPostsByUser.stream()
+                .map(postMapper::toPostResponseDto)
+                .toList();
+
+        return ResponseEntity.ok(postResponseDto);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<PostResponseDto>> findAllPosts(
+            @RequestParam(required = false) UUID categoryId,
+            @RequestParam(required = false) UUID tagId
+    ) {
+        List<PostResponseDto> postResponse = postService.findAll(categoryId, tagId).stream()
+                .map(postMapper::toPostResponseDto).toList();
+
+        return ResponseEntity.ok(postResponse);
+    }
+
     @GetMapping(path = "/{postId}")
     public ResponseEntity<PostResponseDto> findPost(
             @PathVariable UUID postId
@@ -75,6 +77,7 @@ public class PostController {
         return ResponseEntity.ok(postMapper.toPostResponseDto(post));
     }
 
+    // UPDATE
     @PutMapping(path = "/{postId}")
     public ResponseEntity<PostResponseDto> updatePost(
             @PathVariable UUID postId,
@@ -87,6 +90,7 @@ public class PostController {
         return ResponseEntity.ok(postMapper.toPostResponseDto(updatedPost));
     }
 
+    // DELETE
     @DeleteMapping(path = "/{postId}")
     public ResponseEntity<Void> deletePost(
             @PathVariable UUID postId
