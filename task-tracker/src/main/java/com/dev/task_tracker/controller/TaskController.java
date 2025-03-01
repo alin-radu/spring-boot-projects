@@ -48,6 +48,17 @@ public class TaskController {
             throw new IllegalArgumentException("Task List not found with the id: " + taskListId);
         }
 
+        // v1
+//        if (taskService.getTaskById(taskId).isPresent()) {
+//            TaskDto taskDto = taskMapper.toDto(taskService.getTaskById(taskId).get());
+//
+//            return ResponseEntity.ok(taskDto);
+//        } else {
+//
+//            return ResponseEntity.notFound().build();
+//        }
+
+        // v2
         return taskService.getTaskById(taskId)
                 .map(taskMapper::toDto)
                 .map(ResponseEntity::ok)

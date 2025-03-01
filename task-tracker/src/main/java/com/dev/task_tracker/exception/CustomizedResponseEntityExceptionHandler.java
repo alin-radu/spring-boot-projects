@@ -27,7 +27,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     }
 
     @ExceptionHandler({IllegalArgumentException.class})
-    public ResponseEntity<ErrorDetails> handleExceptions(RuntimeException ex, WebRequest request) {
+    public ResponseEntity<ErrorDetails> handleIllegalArgumentException(RuntimeException ex, WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails(
                 LocalDateTime.now(),
                 ex.getMessage(),
@@ -38,7 +38,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     }
 
     @ExceptionHandler(ItemNotFoundException.class)
-    public final ResponseEntity<ErrorDetails> handleUserNotFoundException(Exception ex, WebRequest request) throws Exception {
+    public final ResponseEntity<ErrorDetails> handleItemNotFoundException(Exception ex, WebRequest request) throws Exception {
 
         ErrorDetails errorDetails = new ErrorDetails(
                 LocalDateTime.now(),

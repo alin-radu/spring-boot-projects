@@ -26,7 +26,6 @@ public class TaskListServiceImpl implements TaskListService {
         if (taskList.getId() != null) {
             throw new IllegalArgumentException("Task list already has na ID!");
         }
-
         if (taskList.getTitle() == null || taskList.getTitle().isBlank()) {
             throw new IllegalArgumentException("Task list title must be present!");
         }
@@ -47,11 +46,13 @@ public class TaskListServiceImpl implements TaskListService {
 
     @Override
     public List<TaskList> getTaskLists() {
+
         return taskListRepository.findAll();
     }
 
     @Override
     public Optional<TaskList> getTaskListById(UUID id) {
+
         return taskListRepository.findById(id);
     }
 
@@ -61,14 +62,12 @@ public class TaskListServiceImpl implements TaskListService {
         if (taskList.getId() == null) {
             throw new IllegalArgumentException("Task list must have an ID!");
         }
-
         if (!Objects.equals(taskListId, taskList.getId())) {
             throw new IllegalArgumentException("Operation not allowed!");
         }
 
         TaskList existingTaskList = taskListRepository.findById(taskListId)
                 .orElseThrow(ItemNotFoundException::new);
-
         existingTaskList.setTitle(taskList.getTitle());
         existingTaskList.setDescription(taskList.getDescription());
         existingTaskList.setUpdatedDate(LocalDateTime.now());

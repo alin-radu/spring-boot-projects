@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class ItemNotFoundException extends RuntimeException {
 
     public ItemNotFoundException() {
-        super("Task list not found!");
+        super("Item not found!");
     }
     public ItemNotFoundException(String message) {
         super(message);

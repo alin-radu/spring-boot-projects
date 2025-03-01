@@ -31,7 +31,6 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     @Override
     public Task createTask(UUID taskListId, Task task) {
-
         if (task.getId() != null) {
             throw new IllegalArgumentException("Task already has an ID!");
         }
@@ -42,13 +41,10 @@ public class TaskServiceImpl implements TaskService {
 
         TaskList taskList = taskListRepository.findById(taskListId)
                 .orElseThrow(ItemNotFoundException::new);
-
         TaskPriority taskPriority = Optional.ofNullable(task.getPriority())
                 .orElse(TaskPriority.MEDIUM);
         TaskStatus taskStatus = TaskStatus.OPEN;
-
         LocalDateTime now = LocalDateTime.now();
-
         Task taskToSave = new Task(
                 null,
                 task.getTitle(),
@@ -92,22 +88,18 @@ public class TaskServiceImpl implements TaskService {
         if (task.getId() == null) {
             throw new IllegalArgumentException("Task list must have an ID!");
         }
-
         if (!Objects.equals(taskId, task.getId())) {
             throw new IllegalArgumentException("Operation not allowed!");
         }
-
         if (task.getPriority() == null) {
             throw new IllegalArgumentException("Task must have a valid priority!");
         }
-
         if (task.getStatus() == null) {
             throw new IllegalArgumentException("Task must have a valid status!");
         }
 
         Task existingTask = getTaskById(taskId)
                 .orElseThrow(ItemNotFoundException::new);
-
         existingTask.setTitle(task.getTitle());
         existingTask.setDescription(task.getDescription());
         existingTask.setDueDate(task.getDueDate());
