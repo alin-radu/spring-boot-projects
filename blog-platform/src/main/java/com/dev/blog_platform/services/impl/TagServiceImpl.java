@@ -17,11 +17,30 @@ public class TagServiceImpl implements TagService {
 
     private final TagRepository tagRepository;
 
+    // READ
     @Override
     public List<Tag> findAllTagsWithPostCount() {
         return tagRepository.findAllWithPostCount();
     }
 
+    @Override
+    public List<Tag> findTagByIds(Set<UUID> ids) {
+        List<Tag> foundTags = tagRepository.findAllById(ids);
+        if (foundTags.size() != ids.size()) {
+            throw new EntityNotFoundException("Not all specified tag IDs exist.");
+        }
+
+        return foundTags;
+    }
+
+    @Override
+    public Tag findTagById(UUID tagId) {
+
+        return tagRepository.findById(tagId)
+                .orElseThrow(() -> new EntityNotFoundException("Tag not found with id: " + tagId + "."));
+    }
+
+    // CREATE
     @Transactional
     @Override
     public List<Tag> createTags(Set<String> tagNames) {
@@ -49,6 +68,7 @@ public class TagServiceImpl implements TagService {
         return savedTags;
     }
 
+    // DELETE
     @Transactional
     @Override
     public void deleteTag(UUID tagId) {
@@ -73,20 +93,4 @@ public class TagServiceImpl implements TagService {
 //        }
     }
 
-    @Override
-    public Tag findTagById(UUID tagId) {
-
-        return tagRepository.findById(tagId)
-                .orElseThrow(() -> new EntityNotFoundException("Tag not found with id: " + tagId + "."));
-    }
-
-    @Override
-    public List<Tag> findTagByIds(Set<UUID> ids) {
-        List<Tag> foundTags = tagRepository.findAllById(ids);
-        if (foundTags.size() != ids.size()) {
-            throw new EntityNotFoundException("Not all specified tag IDs exist.");
-        }
-
-        return foundTags;
-    }
 }

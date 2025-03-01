@@ -7,9 +7,10 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface TagService {
-    List<Tag> findAllTagsWithPostCount();
+
     List<Tag> createTags(Set<String> tagNames);
-    void deleteTag(UUID tagId);
-    Tag findTagById(UUID tagId);
+    List<Tag> findAllTagsWithPostCount();
     List<Tag> findTagByIds(Set<UUID> ids);
+    Tag findTagById(UUID tagId);
+    void deleteTag(UUID tagId);
 }

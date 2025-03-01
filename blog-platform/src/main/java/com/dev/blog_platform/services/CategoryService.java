@@ -6,8 +6,9 @@ import java.util.List;
 import java.util.UUID;
 
 public interface CategoryService {
-    List<Category> findAllCategoriesWithPostCount();
+
     Category createCategory(Category category);
-    void deleteCategory(UUID categoryId);
+    List<Category> findAllCategoriesWithPostCount();
     Category findCategoryById(UUID categoryId);
+    void deleteCategory(UUID categoryId);
 }

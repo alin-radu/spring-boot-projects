@@ -32,11 +32,27 @@ public class PostServiceImpl implements PostService {
 
     private static final int WORDS_PER_MINUTE = 200;
 
+    // CREATE
     @Override
-    public Post findPostByPostId(UUID postId) {
-        return postRepository.findById(postId).orElseThrow(
-                () -> new EntityNotFoundException("Post does not exist with id: " + postId + ".")
-        );
+    @jakarta.transaction.Transactional
+    public Post createPost(User user, CreatePostRequest createPostRequest) {
+
+        Post newPost = new Post();
+        newPost.setTitle(createPostRequest.getTitle());
+        newPost.setContent(createPostRequest.getContent());
+        newPost.setStatus(createPostRequest.getStatus());
+        newPost.setAuthor(user);
+        newPost.setReadingTime(calculateReadingTime(createPostRequest.getContent()));
+        newPost.setCategory(categoryService.findCategoryById(createPostRequest.getCategoryId()));
+        newPost.setTags(new HashSet<>(tagService.findTagByIds(createPostRequest.getTagIds())));
+
+        return postRepository.save(newPost);
+    }
+
+    // READ
+    @Override
+    public List<Post> findAllDraftPostsByUser(User user) {
+        return postRepository.findAllByAuthorAndStatus(user, PostStatus.DRAFT);
     }
 
     @Transactional(readOnly = true)
@@ -67,26 +83,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> findAllDraftPostsByUser(User user) {
-        return postRepository.findAllByAuthorAndStatus(user, PostStatus.DRAFT);
+    public Post findPostByPostId(UUID postId) {
+        return postRepository.findById(postId).orElseThrow(
+                () -> new EntityNotFoundException("Post does not exist with id: " + postId + ".")
+        );
     }
 
-    @Override
-    @jakarta.transaction.Transactional
-    public Post createPost(User user, CreatePostRequest createPostRequest) {
-
-        Post newPost = new Post();
-        newPost.setTitle(createPostRequest.getTitle());
-        newPost.setContent(createPostRequest.getContent());
-        newPost.setStatus(createPostRequest.getStatus());
-        newPost.setAuthor(user);
-        newPost.setReadingTime(calculateReadingTime(createPostRequest.getContent()));
-        newPost.setCategory(categoryService.findCategoryById(createPostRequest.getCategoryId()));
-        newPost.setTags(new HashSet<>(tagService.findTagByIds(createPostRequest.getTagIds())));
-
-        return postRepository.save(newPost);
-    }
-
+    // UPDATE
     @Override
     @jakarta.transaction.Transactional
     public Post updatePost(UUID postId, UpdatePostRequest updatePostRequest) {
@@ -116,6 +119,8 @@ public class PostServiceImpl implements PostService {
 
         return postRepository.save(existingPost);
     }
+
+    // DELETE
     @Override
     public void deletePostById(UUID postId) {
         Post existingPost = findPostByPostId(postId);
@@ -123,6 +128,7 @@ public class PostServiceImpl implements PostService {
         postRepository.delete(existingPost);
     }
 
+    // METHODS
     private Integer calculateReadingTime(String content) {
         if (content == null || content.isEmpty()) {
             return 0;
