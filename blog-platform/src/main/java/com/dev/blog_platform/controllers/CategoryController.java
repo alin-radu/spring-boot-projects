@@ -25,7 +25,8 @@ public class CategoryController {
     // CREATE
     @PostMapping
     public ResponseEntity<CategoryResponseDto> createCategory(
-            @Valid @RequestBody CreateCategoryRequestDto createCategoryRequestDto) {
+            @Valid @RequestBody CreateCategoryRequestDto createCategoryRequestDto
+    ) {
         Category categoryToCreate = categoryMapper.toCategoryEntity(createCategoryRequestDto);
         Category savedCategory = categoryService.createCategory(categoryToCreate);
 

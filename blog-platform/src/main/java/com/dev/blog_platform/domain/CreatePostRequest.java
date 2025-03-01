@@ -15,9 +15,7 @@ import java.util.UUID;
 @Builder
 public class CreatePostRequest {
     private String title;
-
     private String content;
-
     private UUID categoryId;
 
     @Builder.Default

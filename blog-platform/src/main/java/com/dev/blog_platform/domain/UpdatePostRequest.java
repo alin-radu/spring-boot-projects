@@ -15,11 +15,8 @@ import java.util.UUID;
 @Builder
 public class UpdatePostRequest {
     private UUID id;
-
     private String title;
-
     private String content;
-
     private UUID categoryId;
 
     @Builder.Default

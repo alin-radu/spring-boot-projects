@@ -25,7 +25,6 @@ public class ErrorController extends ResponseEntityExceptionHandler {
     // Exception
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponseDto> handleException(Exception ex) {
-
         log.error("Caught Exception.", ex);
 
         ApiErrorResponseDto errorResponse = ApiErrorResponseDto.builder()
@@ -39,7 +38,6 @@ public class ErrorController extends ResponseEntityExceptionHandler {
     // IllegalArgumentException
     @ExceptionHandler({IllegalArgumentException.class})
     public ResponseEntity<ApiErrorResponseDto> handleIllegalArgumentException(IllegalArgumentException ex) {
-
         log.error("Caught IllegalArgumentException.", ex);
 
         ApiErrorResponseDto errorResponse = ApiErrorResponseDto.builder()
@@ -53,7 +51,6 @@ public class ErrorController extends ResponseEntityExceptionHandler {
     // IllegalStateException
     @ExceptionHandler({IllegalStateException.class})
     public ResponseEntity<ApiErrorResponseDto> handleIllegalStateException(IllegalStateException ex) {
-
         log.error("Caught IllegalStateException.", ex);
 
         ApiErrorResponseDto errorResponse = ApiErrorResponseDto.builder()
@@ -67,7 +64,6 @@ public class ErrorController extends ResponseEntityExceptionHandler {
     // BadCredentialsException
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiErrorResponseDto> handleBadCredentialsException(BadCredentialsException ex) {
-
         log.error("Caught BadCredentialsException.", ex);
 
         ApiErrorResponseDto errorResponse = ApiErrorResponseDto.builder()
@@ -81,7 +77,6 @@ public class ErrorController extends ResponseEntityExceptionHandler {
     // EntityNotFoundException
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ApiErrorResponseDto> handleEntityNotFoundException(EntityNotFoundException ex) {
-
         log.error("Caught EntityNotFoundException.", ex);
 
         ApiErrorResponseDto errorResponse = ApiErrorResponseDto.builder()
@@ -96,6 +91,7 @@ public class ErrorController extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex, @Nullable HttpHeaders headers, @Nullable HttpStatusCode status, WebRequest request) {
+        log.error("Caught MethodArgumentNotValidException.", ex);
 
         List<ApiErrorResponseDto.FieldError> errors = ex.getBindingResult().getFieldErrors().stream()
                 .map(fieldError ->

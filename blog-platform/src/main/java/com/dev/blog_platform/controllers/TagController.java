@@ -39,7 +39,6 @@ public class TagController {
     // READ
     @GetMapping
     public ResponseEntity<List<TagResponseDto>> findAllTags() {
-
         List<TagResponseDto> tagsResponseDto =
                 tagService.findAllTagsWithPostCount().stream()
                         .map(tagMapper::toTagResponseDto)

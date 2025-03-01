@@ -12,7 +12,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryResponseDto {
-
     private UUID id;
     private String name;
     private long postCount;
