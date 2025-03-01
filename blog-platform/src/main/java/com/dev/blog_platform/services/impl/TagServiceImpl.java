@@ -17,6 +17,36 @@ public class TagServiceImpl implements TagService {
 
     private final TagRepository tagRepository;
 
+    // CREATE
+    @Transactional
+    @Override
+    public List<Tag> createTags(Set<String> tagNames) {
+        List<Tag> existingTags = tagRepository.findByNameIn(tagNames);
+
+        Set<String> existingTagNames = existingTags.stream()
+                .map(Tag::getName)
+                .collect(Collectors.toSet());
+
+        List<Tag> newTags = tagNames.stream()
+                .filter(name -> !existingTagNames.contains(name))
+                .map(name ->
+                        Tag.builder()
+                                .name(name)
+                                .posts(new HashSet<>())
+                                .build()
+                )
+                .toList();
+
+        List<Tag> savedTags = new ArrayList<>();
+        if (!newTags.isEmpty()) {
+            savedTags = tagRepository.saveAll(newTags);
+        }
+
+        savedTags.addAll(existingTags);
+
+        return savedTags;
+    }
+
     // READ
     @Override
     public List<Tag> findAllTagsWithPostCount() {
@@ -38,34 +68,6 @@ public class TagServiceImpl implements TagService {
 
         return tagRepository.findById(tagId)
                 .orElseThrow(() -> new EntityNotFoundException("Tag not found with id: " + tagId + "."));
-    }
-
-    // CREATE
-    @Transactional
-    @Override
-    public List<Tag> createTags(Set<String> tagNames) {
-        List<Tag> existingTags = tagRepository.findByNameIn(tagNames);
-        Set<String> existingTagNames = existingTags.stream()
-                .map(Tag::getName)
-                .collect(Collectors.toSet());
-
-        List<Tag> newTags = tagNames.stream()
-                .filter(name -> !existingTagNames.contains(name))
-                .map(name -> Tag.builder()
-                        .name(name)
-                        .posts(new HashSet<>())
-                        .build()
-                )
-                .toList();
-
-        List<Tag> savedTags = new ArrayList<>();
-        if (!newTags.isEmpty()) {
-            savedTags = tagRepository.saveAll(newTags);
-        }
-
-        savedTags.addAll(existingTags);
-
-        return savedTags;
     }
 
     // DELETE

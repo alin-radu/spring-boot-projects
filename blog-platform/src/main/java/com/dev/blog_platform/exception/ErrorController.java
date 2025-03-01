@@ -68,7 +68,7 @@ public class ErrorController extends ResponseEntityExceptionHandler {
 
         ApiErrorResponseDto errorResponse = ApiErrorResponseDto.builder()
                 .status(HttpStatus.UNAUTHORIZED.value())
-                .message("Incorrect username or password")
+                .message("Incorrect username or password.")
                 .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);

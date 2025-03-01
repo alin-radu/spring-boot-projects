@@ -33,6 +33,7 @@ public class CategoryServiceImpl implements CategoryService {
     // READ
     @Override
     public List<Category> findAllCategoriesWithPostCount() {
+
         return categoryRepository.findAllWithPostCount();
     }
 
@@ -47,7 +48,6 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void deleteCategory(UUID categoryId) {
 
-        // v1
         categoryRepository.findById(categoryId).ifPresent(tag -> {
                     if (!tag.getPosts().isEmpty()) {
                         throw new IllegalStateException("Category has posts associated with it.");
@@ -55,15 +55,5 @@ public class CategoryServiceImpl implements CategoryService {
                     categoryRepository.deleteById(categoryId);
                 }
         );
-
-        // v2
-//        Optional<Category> category = categoryRepository.findById(categoryId);
-//        if (category.isPresent()) {
-//            if (!category.get().getPosts().isEmpty()) {
-//                throw new IllegalStateException("Category has posts associated with it.");
-//            }
-//
-//            categoryRepository.deleteById(categoryId);
-//        }
     }
 }
