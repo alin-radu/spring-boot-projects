@@ -17,19 +17,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
 
-    // READ
-    @Override
-    public List<Category> findAllCategoriesWithPostCount() {
-        return categoryRepository.findAllWithPostCount();
-    }
-
-    @Override
-    public Category findCategoryById(UUID categoryId) {
-
-        return categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new EntityNotFoundException("Category not found with id " + categoryId));
-    }
-
     // CREATE
     @Override
     @Transactional
@@ -41,6 +28,19 @@ public class CategoryServiceImpl implements CategoryService {
         }
 
         return categoryRepository.save(category);
+    }
+
+    // READ
+    @Override
+    public List<Category> findAllCategoriesWithPostCount() {
+        return categoryRepository.findAllWithPostCount();
+    }
+
+    @Override
+    public Category findCategoryById(UUID categoryId) {
+
+        return categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new EntityNotFoundException("Category not found with id " + categoryId));
     }
 
     // DELETE

@@ -44,7 +44,6 @@ public class CategoryController {
                         .toList();
 
         return ResponseEntity.ok(categoriesResponseDto);
-
     }
 
     // DELETE
