@@ -32,10 +32,10 @@ public class User {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Builder.Default
     @OneToMany(mappedBy = "author",
             cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+            orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
 
     @Column(name = "created_date", nullable = false)
@@ -52,6 +52,7 @@ public class User {
         User user = (User) o;
         return Objects.equals(id, user.id) && Objects.equals(email, user.email) && Objects.equals(password, user.password) && Objects.equals(name, user.name) && Objects.equals(createdDate, user.createdDate);
     }
+
     @Override
     public int hashCode() {
         return Objects.hash(id, email, password, name, createdDate);

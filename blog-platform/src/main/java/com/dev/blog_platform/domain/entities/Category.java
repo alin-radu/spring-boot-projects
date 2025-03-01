@@ -25,6 +25,7 @@ public class Category {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
+    @Builder.Default
     @OneToMany(mappedBy = "category")
     private List<Post> posts = new ArrayList<>();
 
@@ -34,8 +35,17 @@ public class Category {
         Category category = (Category) o;
         return Objects.equals(id, category.id) && Objects.equals(name, category.name);
     }
+
     @Override
     public int hashCode() {
         return Objects.hash(id, name);
+    }
+
+    @Override
+    public String toString() {
+        return "Category{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

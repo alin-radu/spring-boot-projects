@@ -45,6 +45,7 @@ public class Post {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
+    @Builder.Default
     @ManyToMany
     @JoinTable(
             name = "post_tags",
@@ -86,13 +87,13 @@ public class Post {
     @Override
     public String toString() {
         return "Post{" +
-                "createdDate=" + createdDate +
-                ", updatedDate=" + updatedDate +
-                ", id=" + id +
+                "id=" + id +
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
                 ", status=" + status +
                 ", readingTime=" + readingTime +
+                ", createdDate=" + createdDate +
+                ", updatedDate=" + updatedDate +
                 '}';
     }
 }

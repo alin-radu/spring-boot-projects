@@ -25,6 +25,7 @@ public class Tag {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
+    @Builder.Default
     @ManyToMany(mappedBy = "tags")
     private Set<Post> posts = new HashSet<>();
 
@@ -38,5 +39,13 @@ public class Tag {
     @Override
     public int hashCode() {
         return Objects.hash(id, name);
+    }
+
+    @Override
+    public String toString() {
+        return "Tag{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }
