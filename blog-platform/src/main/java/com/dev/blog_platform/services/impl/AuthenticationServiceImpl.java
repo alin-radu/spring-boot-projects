@@ -29,6 +29,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private String secretKey;
 
     private final Long jwtExpiryMs = 86400000L;
+    private final String test = "test";
 
     @Override
     public UserDetails authenticate(String email, String password) {
