@@ -2,9 +2,9 @@ package com.dev.task_tracker.controller;
 
 import com.dev.task_tracker.domain.dto.TaskListDto;
 import com.dev.task_tracker.domain.entities.TaskList;
-import com.dev.task_tracker.mappers.TaskListMapper;
-import com.dev.task_tracker.services.TaskListService;
-import com.dev.task_tracker.services.TaskService;
+import com.dev.task_tracker.mapper.TaskListMapper;
+import com.dev.task_tracker.service.TaskListService;
+import com.dev.task_tracker.service.TaskService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

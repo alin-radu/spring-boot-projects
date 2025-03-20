@@ -1,6 +1,6 @@
 package com.dev.blog_platform.security;
 
-import com.dev.blog_platform.services.AuthenticationService;
+import com.dev.blog_platform.service.AuthenticationService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

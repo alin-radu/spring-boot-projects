@@ -1,7 +1,7 @@
 package com.dev.blog_platform.security;
 
 import com.dev.blog_platform.domain.entities.User;
-import com.dev.blog_platform.repositories.UserRepository;
+import com.dev.blog_platform.repositorie.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
