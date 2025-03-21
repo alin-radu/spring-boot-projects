@@ -7,7 +7,7 @@ import com.dev.blog_platform.domain.entities.Category;
 import com.dev.blog_platform.domain.entities.Post;
 import com.dev.blog_platform.domain.entities.Tag;
 import com.dev.blog_platform.domain.entities.User;
-import com.dev.blog_platform.repositorie.PostRepository;
+import com.dev.blog_platform.repositories.PostRepository;
 import com.dev.blog_platform.service.CategoryService;
 import com.dev.blog_platform.service.PostService;
 import com.dev.blog_platform.service.TagService;

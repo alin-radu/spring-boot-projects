@@ -1,7 +1,7 @@
 package com.dev.blog_platform.service.impl;
 
 import com.dev.blog_platform.domain.entities.Tag;
-import com.dev.blog_platform.repositorie.TagRepository;
+import com.dev.blog_platform.repositories.TagRepository;
 import com.dev.blog_platform.service.TagService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;

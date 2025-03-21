@@ -1,7 +1,7 @@
 package com.dev.blog_platform.service.impl;
 
 import com.dev.blog_platform.domain.entities.Category;
-import com.dev.blog_platform.repositorie.CategoryRepository;
+import com.dev.blog_platform.repositories.CategoryRepository;
 import com.dev.blog_platform.service.CategoryService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;

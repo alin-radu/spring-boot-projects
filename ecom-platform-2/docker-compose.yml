@@ -1,0 +1,15 @@
+services:
+  postgres-db:
+    image: postgres:latest
+    container_name: econ-platform-2
+    environment:
+      POSTGRES_DB: econ-platform-2
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: test1234
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_db:/var/lib/postgresql/data
+
+volumes:
+  postgres_db:

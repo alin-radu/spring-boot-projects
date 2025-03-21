@@ -1,6 +1,6 @@
 package com.dev.blog_platform.config;
 
-import com.dev.blog_platform.repositorie.UserRepository;
+import com.dev.blog_platform.repositories.UserRepository;
 import com.dev.blog_platform.security.BlogUserDetailsService;
 import com.dev.blog_platform.security.JwtAuthenticationFilter;
 import com.dev.blog_platform.service.AuthenticationService;

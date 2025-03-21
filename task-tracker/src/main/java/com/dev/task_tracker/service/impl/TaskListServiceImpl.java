@@ -24,7 +24,7 @@ public class TaskListServiceImpl implements TaskListService {
     @Override
     public TaskList createTaskList(TaskList taskList) {
         if (taskList.getId() != null) {
-            throw new IllegalArgumentException("Task list already has na ID!");
+            throw new IllegalArgumentException("Task list already has an ID!");
         }
         if (taskList.getTitle() == null || taskList.getTitle().isBlank()) {
             throw new IllegalArgumentException("Task list title must be present!");

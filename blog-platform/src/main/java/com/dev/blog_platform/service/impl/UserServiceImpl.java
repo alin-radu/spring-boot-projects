@@ -1,7 +1,7 @@
 package com.dev.blog_platform.service.impl;
 
 import com.dev.blog_platform.domain.entities.User;
-import com.dev.blog_platform.repositorie.UserRepository;
+import com.dev.blog_platform.repositories.UserRepository;
 import com.dev.blog_platform.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;

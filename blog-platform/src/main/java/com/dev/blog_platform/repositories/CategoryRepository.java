@@ -1,4 +1,4 @@
-package com.dev.blog_platform.repositorie;
+package com.dev.blog_platform.repositories;
 
 import com.dev.blog_platform.domain.entities.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
