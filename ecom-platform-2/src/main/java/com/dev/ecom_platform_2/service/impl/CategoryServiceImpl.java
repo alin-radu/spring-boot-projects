@@ -1,10 +1,9 @@
 package com.dev.ecom_platform_2.service.impl;
 
 import com.dev.ecom_platform_2.domain.entities.Category;
-import com.dev.ecom_platform_2.mapper.CategoryMapper;
+import com.dev.ecom_platform_2.exception.ResourceNotFoundException;
 import com.dev.ecom_platform_2.repositories.CategoryRepository;
 import com.dev.ecom_platform_2.service.CategoryService;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,7 +14,7 @@ import java.util.UUID;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
-    public CategoryServiceImpl(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
     }
 
@@ -23,13 +22,10 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category createCategory(Category category) {
         if (category.getId() != null) {
-            throw new IllegalArgumentException("Category invalid!");
+            throw new IllegalArgumentException("Invalid category!");
         }
 
         String categoryName = category.getName();
-        if (categoryName == null || categoryName.isBlank()) {
-            throw new IllegalArgumentException("Category title must be present!");
-        }
         if (categoryRepository.existsByNameIgnoreCase(categoryName)) {
             throw new IllegalArgumentException("Category already exists with name: " + categoryName);
         }
@@ -39,7 +35,7 @@ public class CategoryServiceImpl implements CategoryService {
         return category;
     }
 
-    // RETRIEVE
+    // READ
     @Override
     public List<Category> getAllCategories() {
 
@@ -50,7 +46,7 @@ public class CategoryServiceImpl implements CategoryService {
     public Category findCategoryById(UUID categoryId) {
 
         return categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new EntityNotFoundException("Category not found with id " + categoryId));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id " + categoryId));
     }
 
     // UPDATE
@@ -61,6 +57,9 @@ public class CategoryServiceImpl implements CategoryService {
         }
         if (!Objects.equals(categoryId, updatedCategoryRequest.getId())) {
             throw new IllegalArgumentException("Operation not allowed!");
+        }
+        if (categoryRepository.existsByNameIgnoreCase(updatedCategoryRequest.getName())) {
+            throw new IllegalArgumentException("Category already exists with name: " + updatedCategoryRequest.getName());
         }
 
         Category existingCategory = findCategoryById(categoryId);

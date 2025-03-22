@@ -4,6 +4,7 @@ import com.dev.ecom_platform_2.domain.dtos.CategoryDto;
 import com.dev.ecom_platform_2.domain.entities.Category;
 import com.dev.ecom_platform_2.mapper.CategoryMapper;
 import com.dev.ecom_platform_2.service.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class CategoryController {
 
     // CREATE
     @PostMapping("/admin/categories")
-    public ResponseEntity<Category> createCategories(@RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<Category> createCategories(@Valid @RequestBody CategoryDto categoryDto) {
 
         Category category = categoryMapper.fromDto(categoryDto);
         Category savedCategory = categoryService.createCategory(category);
@@ -44,7 +45,7 @@ public class CategoryController {
 
     // UPDATE
     @PutMapping("/admin/categories/{categoryId}")
-    public ResponseEntity<Category> updateCategory(@PathVariable UUID categoryId, @RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<Category> updateCategory(@PathVariable UUID categoryId, @Valid @RequestBody CategoryDto categoryDto) {
 
         Category categoryToUpdate = categoryMapper.fromDto(categoryDto);
         Category updatedCategory = categoryService.updateCategory(categoryId, categoryToUpdate);

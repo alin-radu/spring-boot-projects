@@ -1,15 +1,15 @@
-package com.dev.task_tracker.exception;
+package com.dev.ecom_platform_2.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(code = HttpStatus.NOT_FOUND)
-public class ItemNotFoundException extends RuntimeException {
+public class ResourceNotFoundException extends RuntimeException {
 
-    public ItemNotFoundException() {
+    public ResourceNotFoundException() {
         super("Resource not found!");
     }
-    public ItemNotFoundException(String message) {
+    public ResourceNotFoundException(String message) {
         super(message);
     }
 }

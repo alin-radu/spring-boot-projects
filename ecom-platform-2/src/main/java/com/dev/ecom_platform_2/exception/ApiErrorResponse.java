@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -15,6 +16,9 @@ public class ApiErrorResponse {
     private int status;
     private String message;
     private List<FieldError> errors;
+
+    private LocalDateTime timestamp;  // Timestamp of when the error occurred
+    private String path;             // The request path that caused the error
 
     @Data
     @Builder
