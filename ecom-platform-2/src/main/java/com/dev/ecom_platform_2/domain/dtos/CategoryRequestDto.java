@@ -14,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CategoryDto {
+public class CategoryRequestDto {
     private UUID id;
 
     @NotBlank(message = "Category name is required.")

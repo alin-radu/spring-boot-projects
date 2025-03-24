@@ -1,7 +1,7 @@
 package com.dev.ecom_platform_2.controller;
 
-import com.dev.ecom_platform_2.domain.dtos.CategoryDto;
-import com.dev.ecom_platform_2.domain.entities.Category;
+import com.dev.ecom_platform_2.domain.dtos.CategoryRequestDto;
+import com.dev.ecom_platform_2.domain.dtos.CategoryResponseDto;
 import com.dev.ecom_platform_2.mapper.CategoryMapper;
 import com.dev.ecom_platform_2.service.CategoryService;
 import jakarta.validation.Valid;
@@ -26,31 +26,34 @@ public class CategoryController {
 
     // CREATE
     @PostMapping("/admin/categories")
-    public ResponseEntity<Category> createCategories(@Valid @RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<CategoryResponseDto> createCategories(@Valid @RequestBody CategoryRequestDto categoryRequestDto) {
 
-        Category category = categoryMapper.fromDto(categoryDto);
-        Category savedCategory = categoryService.createCategory(category);
+        var category = categoryMapper.fromDto(categoryRequestDto);
+        var savedCategory = categoryService.createCategory(category);
+        var savedCategoryDto = categoryMapper.toDto(savedCategory);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedCategory);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedCategoryDto);
     }
 
     // READ
     @GetMapping("/public/categories")
-    public ResponseEntity<List<Category>> getAllCategories() {
+    public ResponseEntity<List<CategoryResponseDto>> getAllCategories() {
 
         var categories = categoryService.getAllCategories();
+        var categoriesDto = categories.stream().map(categoryMapper::toDto).toList();
 
-        return ResponseEntity.status(HttpStatus.OK).body(categories);
+        return ResponseEntity.status(HttpStatus.OK).body(categoriesDto);
     }
 
     // UPDATE
     @PutMapping("/admin/categories/{categoryId}")
-    public ResponseEntity<Category> updateCategory(@PathVariable UUID categoryId, @Valid @RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable UUID categoryId, @Valid @RequestBody CategoryRequestDto categoryRequestDto) {
 
-        Category categoryToUpdate = categoryMapper.fromDto(categoryDto);
-        Category updatedCategory = categoryService.updateCategory(categoryId, categoryToUpdate);
+        var categoryToUpdate = categoryMapper.fromDto(categoryRequestDto);
+        var updatedCategory = categoryService.updateCategory(categoryId, categoryToUpdate);
+        var updatedCategoryDto = categoryMapper.toDto(updatedCategory);
 
-        return ResponseEntity.status(HttpStatus.OK).body(updatedCategory);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedCategoryDto);
     }
 
     // DELETE
