@@ -1,7 +1,10 @@
 package com.dev.ecom_platform_2.service.impl;
 
+import com.dev.ecom_platform_2.domain.dtos.CategoryRequestDto;
+import com.dev.ecom_platform_2.domain.dtos.CategoryResponseDto;
 import com.dev.ecom_platform_2.domain.entities.Category;
 import com.dev.ecom_platform_2.exception.ResourceNotFoundException;
+import com.dev.ecom_platform_2.mapper.CategoryMapper;
 import com.dev.ecom_platform_2.repositories.CategoryRepository;
 import com.dev.ecom_platform_2.service.CategoryService;
 import org.springframework.stereotype.Service;
@@ -14,32 +17,37 @@ import java.util.UUID;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
-    public CategoryServiceImpl(CategoryRepository categoryRepository) {
+    private final CategoryMapper categoryMapper;
+    public CategoryServiceImpl(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
         this.categoryRepository = categoryRepository;
+        this.categoryMapper = categoryMapper;
     }
 
     // CREATE
     @Override
-    public Category createCategory(Category category) {
-        if (category.getId() != null) {
+    public CategoryResponseDto createCategory(CategoryRequestDto categoryRequestDto) {
+        var categoryToBeSaved = categoryMapper.fromDto(categoryRequestDto);
+
+        if (categoryToBeSaved.getId() != null) {
             throw new IllegalArgumentException("Invalid category!");
         }
 
-        String categoryName = category.getName();
+        String categoryName = categoryToBeSaved.getName();
         if (categoryRepository.existsByNameIgnoreCase(categoryName)) {
             throw new IllegalArgumentException("Category already exists with name: " + categoryName);
         }
 
-        categoryRepository.save(category);
+        var savedCategory = categoryRepository.save(categoryToBeSaved);
 
-        return category;
+        return categoryMapper.toDto(savedCategory);
     }
 
     // READ
     @Override
-    public List<Category> getAllCategories() {
+    public List<CategoryResponseDto> getAllCategories() {
+        var categories = categoryRepository.findAll();
 
-        return categoryRepository.findAll();
+        return categories.stream().map(categoryMapper::toDto).toList();
     }
 
     @Override
@@ -51,22 +59,24 @@ public class CategoryServiceImpl implements CategoryService {
 
     // UPDATE
     @Override
-    public Category updateCategory(UUID categoryId, Category updatedCategoryRequest) {
-        if (updatedCategoryRequest.getId() == null) {
+    public CategoryResponseDto updateCategory(UUID categoryId, CategoryRequestDto categoryRequestDto) {
+        var categoryToUpdate = categoryMapper.fromDto(categoryRequestDto);
+
+        if (categoryToUpdate.getId() == null) {
             throw new IllegalArgumentException("Category must have an ID!");
         }
-        if (!Objects.equals(categoryId, updatedCategoryRequest.getId())) {
+        if (!Objects.equals(categoryId, categoryToUpdate.getId())) {
             throw new IllegalArgumentException("Operation not allowed!");
         }
-        if (categoryRepository.existsByNameIgnoreCase(updatedCategoryRequest.getName())) {
-            throw new IllegalArgumentException("Category already exists with name: " + updatedCategoryRequest.getName());
+        if (categoryRepository.existsByNameIgnoreCase(categoryToUpdate.getName())) {
+            throw new IllegalArgumentException("Category already exists with name: " + categoryToUpdate.getName());
         }
 
         Category existingCategory = findCategoryById(categoryId);
+        existingCategory.setName(categoryToUpdate.getName());
+        var updatedCategory = categoryRepository.save(existingCategory);
 
-        existingCategory.setName(updatedCategoryRequest.getName());
-
-        return categoryRepository.save(existingCategory);
+        return categoryMapper.toDto(updatedCategory);
     }
 
     // DELETE

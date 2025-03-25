@@ -2,7 +2,6 @@ package com.dev.ecom_platform_2.controller;
 
 import com.dev.ecom_platform_2.domain.dtos.CategoryRequestDto;
 import com.dev.ecom_platform_2.domain.dtos.CategoryResponseDto;
-import com.dev.ecom_platform_2.mapper.CategoryMapper;
 import com.dev.ecom_platform_2.service.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -17,49 +16,38 @@ import java.util.UUID;
 public class CategoryController {
 
     private final CategoryService categoryService;
-    private final CategoryMapper categoryMapper;
 
-    public CategoryController(CategoryService categoryService, CategoryMapper categoryMapper) {
+    public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
-        this.categoryMapper = categoryMapper;
     }
 
     // CREATE
     @PostMapping("/admin/categories")
     public ResponseEntity<CategoryResponseDto> createCategories(@Valid @RequestBody CategoryRequestDto categoryRequestDto) {
+        var savedCategory = categoryService.createCategory(categoryRequestDto);
 
-        var category = categoryMapper.fromDto(categoryRequestDto);
-        var savedCategory = categoryService.createCategory(category);
-        var savedCategoryDto = categoryMapper.toDto(savedCategory);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedCategoryDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedCategory);
     }
 
     // READ
     @GetMapping("/public/categories")
     public ResponseEntity<List<CategoryResponseDto>> getAllCategories() {
-
         var categories = categoryService.getAllCategories();
-        var categoriesDto = categories.stream().map(categoryMapper::toDto).toList();
 
-        return ResponseEntity.status(HttpStatus.OK).body(categoriesDto);
+        return ResponseEntity.status(HttpStatus.OK).body(categories);
     }
 
     // UPDATE
     @PutMapping("/admin/categories/{categoryId}")
     public ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable UUID categoryId, @Valid @RequestBody CategoryRequestDto categoryRequestDto) {
+        var updatedCategory = categoryService.updateCategory(categoryId, categoryRequestDto);
 
-        var categoryToUpdate = categoryMapper.fromDto(categoryRequestDto);
-        var updatedCategory = categoryService.updateCategory(categoryId, categoryToUpdate);
-        var updatedCategoryDto = categoryMapper.toDto(updatedCategory);
-
-        return ResponseEntity.status(HttpStatus.OK).body(updatedCategoryDto);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedCategory);
     }
 
     // DELETE
     @DeleteMapping("/admin/categories/{categoryId}")
     public ResponseEntity<Void> deleteCategory(@PathVariable UUID categoryId) {
-
         categoryService.deleteCategory(categoryId);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
