@@ -9,13 +9,13 @@ import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Data
-public class CategoryListResponseDto {
-    private List<CategoryResponseDto> content;
+@Builder
+public class ProductListResponseDto {
+    private List<ProductResponseDto> content;
     private Integer pageNumber;
     private Integer pageSize;
     private Long totalElements;
     private Integer totalPages;
-    private Boolean lastPage;
+    private boolean lastPage;
 }

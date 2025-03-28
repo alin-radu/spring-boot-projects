@@ -1,18 +1,6 @@
 package com.dev.ecom_platform_2.domain.dtos;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.util.UUID;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@Data
-public class CategoryResponseDto {
-    private UUID id;
-
-    private String name;
+public record CategoryResponseDto(UUID id, String name) {
 }

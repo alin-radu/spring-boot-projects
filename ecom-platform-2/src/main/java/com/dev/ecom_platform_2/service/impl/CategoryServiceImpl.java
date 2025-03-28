@@ -1,5 +1,6 @@
 package com.dev.ecom_platform_2.service.impl;
 
+import com.dev.ecom_platform_2.domain.dtos.CategoryListResponseDto;
 import com.dev.ecom_platform_2.domain.dtos.CategoryRequestDto;
 import com.dev.ecom_platform_2.domain.dtos.CategoryResponseDto;
 import com.dev.ecom_platform_2.domain.entities.Category;
@@ -7,9 +8,9 @@ import com.dev.ecom_platform_2.exception.ResourceNotFoundException;
 import com.dev.ecom_platform_2.mapper.CategoryMapper;
 import com.dev.ecom_platform_2.repositories.CategoryRepository;
 import com.dev.ecom_platform_2.service.CategoryService;
+import com.dev.ecom_platform_2.utilities.Utility;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -44,10 +45,20 @@ public class CategoryServiceImpl implements CategoryService {
 
     // READ
     @Override
-    public List<CategoryResponseDto> getAllCategories() {
-        var categories = categoryRepository.findAll();
+    public CategoryListResponseDto getAllCategories(Integer pageNumber, Integer pageSize, String sortBy, String sortDirection) {
+        var pageable = Utility.createPageableWithValidation(Category.class, pageNumber, pageSize, sortBy, sortDirection);
+        var categoryPage = categoryRepository.findAll(pageable);
+        var categories = categoryPage.getContent();
+        var categoriesResponseDto = categories.stream().map(categoryMapper::toDto).toList();
 
-        return categories.stream().map(categoryMapper::toDto).toList();
+        return CategoryListResponseDto.builder()
+                .content(categoriesResponseDto)
+                .pageNumber(categoryPage.getNumber())
+                .pageSize(categoryPage.getSize())
+                .totalElements(categoryPage.getTotalElements())
+                .totalPages(categoryPage.getTotalPages())
+                .lastPage(categoryPage.isLast())
+                .build();
     }
 
     @Override

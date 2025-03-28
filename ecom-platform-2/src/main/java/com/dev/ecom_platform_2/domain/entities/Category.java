@@ -7,10 +7,9 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "categories")
-@Data
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@AllArgsConstructor
+@Data
 public class Category {
 
     @Id

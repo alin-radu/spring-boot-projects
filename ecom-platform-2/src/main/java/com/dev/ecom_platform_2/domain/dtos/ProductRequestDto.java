@@ -9,15 +9,25 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class CategoryRequestDto {
+public class ProductRequestDto {
+
     private UUID id;
 
-    @NotBlank(message = "Category name is required.")
-    @Size(min = 2, max = 30, message = "Category name must be between {min} and {max} characters.")
+    @NotBlank(message = "Product name is required.")
+    @Size(min = 2, max = 50, message = "Product name must be between {min} and {max} characters.")
     @Pattern(regexp = "^[\\w\\s-]+$", message = "Category name can only contain letters, numbers, spaces, and hyphens.")
     private String name;
+
+    @NotBlank
+    @Size(min = 6, message = "Product description must contain atleast 6 characters")
+    private String description;
+
+    private String image;
+    private Integer quantity;
+    private double price;
+    private double discount;
+    private double specialPrice;
 }
