@@ -45,6 +45,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     // READ
     @Override
+    public Category findCategoryById(UUID categoryId) {
+
+        return categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id " + categoryId));
+    }
+
+    @Override
     public CategoryListResponseDto getAllCategories(Integer pageNumber, Integer pageSize, String sortBy, String sortDirection) {
         var pageable = Utility.createPageableWithValidation(Category.class, pageNumber, pageSize, sortBy, sortDirection);
         var categoryPage = categoryRepository.findAll(pageable);
@@ -59,13 +66,6 @@ public class CategoryServiceImpl implements CategoryService {
                 .totalPages(categoryPage.getTotalPages())
                 .lastPage(categoryPage.isLast())
                 .build();
-    }
-
-    @Override
-    public Category findCategoryById(UUID categoryId) {
-
-        return categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id " + categoryId));
     }
 
     // UPDATE

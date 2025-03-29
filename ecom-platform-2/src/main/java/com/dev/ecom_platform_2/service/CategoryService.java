@@ -9,8 +9,8 @@ import java.util.UUID;
 
 public interface CategoryService {
     CategoryResponseDto createCategory(CategoryRequestDto categoryRequestDto);
-    CategoryListResponseDto getAllCategories(Integer pageNumber, Integer pageSize, String sortBy, String sortDirection);
     Category findCategoryById(UUID categoryId);
+    CategoryListResponseDto getAllCategories(Integer pageNumber, Integer pageSize, String sortBy, String sortDirection);
     CategoryResponseDto updateCategory(UUID categoryId, CategoryRequestDto categoryRequestDto);
     void deleteCategory(UUID categoryId);
 }

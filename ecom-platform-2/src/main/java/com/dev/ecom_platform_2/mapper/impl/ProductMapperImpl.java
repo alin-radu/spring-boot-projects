@@ -5,7 +5,6 @@ import com.dev.ecom_platform_2.domain.dtos.ProductResponseDto;
 import com.dev.ecom_platform_2.domain.entities.Product;
 import com.dev.ecom_platform_2.mapper.ProductMapper;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeMap;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -24,11 +23,8 @@ public class ProductMapperImpl implements ProductMapper {
     @Override
     public ProductResponseDto toDto(Product product) {
 
-        TypeMap<Product, ProductResponseDto> typeMap = modelMapper.getTypeMap(Product.class, ProductResponseDto.class);
-
-        typeMap.addMapping(src -> src.getCategory().getId(), ProductResponseDto::setCategoryId);
-
-        return modelMapper.map(product, ProductResponseDto.class);
+        return modelMapper.typeMap(Product.class, ProductResponseDto.class)
+                .addMapping(src -> src.getCategory().getId(), ProductResponseDto::setCategoryId)
+                .map(product);
     }
-
 }

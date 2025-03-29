@@ -46,4 +46,40 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(productListResponseDto);
     }
 
+    @GetMapping("/public/categories/{categoryId}/products")
+    public ResponseEntity<ProductListResponseDto> getProductsByCategory(
+            @PathVariable UUID categoryId,
+            @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER) Integer page,
+            @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE) Integer limit,
+            @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_BY_ID) String sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = AppConstants.SORT_DIRECTION_ASC) String sortDirection) {
+
+        var productListResponseDto = productService.getProductsByCategoryId(categoryId, page, limit, sortBy, sortDirection);
+
+        return ResponseEntity.status(HttpStatus.OK).body(productListResponseDto);
+    }
+
+    @GetMapping("/public/products/keyword/{keyword}")
+    public ResponseEntity<ProductListResponseDto> getProductsByKeyword(
+            @PathVariable String keyword,
+            @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER) Integer page,
+            @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE) Integer limit,
+            @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_BY_ID) String sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = AppConstants.SORT_DIRECTION_ASC) String sortDirection) {
+
+        var productListResponseDto = productService.getProductsByKeyword(keyword, page, limit, sortBy, sortDirection);
+
+        return ResponseEntity.status(HttpStatus.OK).body(productListResponseDto);
+    }
+
+    // UPDATE
+    @PutMapping("/admin/products/{productId}")
+    public ResponseEntity<ProductResponseDto> updateProduct(
+            @PathVariable UUID productId,
+            @Valid @RequestBody ProductRequestDto productRequestDto
+    ) {
+        var productResponseDto = productService.updateProduct(productId, productRequestDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(productResponseDto);
+    }
 }
