@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -81,5 +82,23 @@ public class ProductController {
         var productResponseDto = productService.updateProduct(productId, productRequestDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(productResponseDto);
+    }
+
+    @PutMapping("/admin/products/{productId}/image")
+    public ResponseEntity<ProductResponseDto> updateImage(
+            @PathVariable UUID productId,
+            @RequestParam("image") MultipartFile image
+    ) {
+        var productResponseDto = productService.updateProductImage(productId, image);
+
+        return ResponseEntity.status(HttpStatus.OK).body(productResponseDto);
+    }
+
+    // Delete
+    @DeleteMapping("/admin/products/{productId}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable UUID productId) {
+        productService.deleteProductById(productId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

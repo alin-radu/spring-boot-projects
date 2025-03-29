@@ -8,11 +8,17 @@ import com.dev.ecom_platform_2.exception.ResourceNotFoundException;
 import com.dev.ecom_platform_2.mapper.ProductMapper;
 import com.dev.ecom_platform_2.repositories.CategoryRepository;
 import com.dev.ecom_platform_2.repositories.ProductRepository;
+import com.dev.ecom_platform_2.service.CategoryService;
 import com.dev.ecom_platform_2.service.ProductService;
 import com.dev.ecom_platform_2.utilities.Utility;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -23,10 +29,12 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
-    public ProductServiceImpl(CategoryRepository categoryRepository, ProductRepository productRepository, ProductMapper productMapper) {
+    private final CategoryService categoryService;
+    public ProductServiceImpl(CategoryRepository categoryRepository, ProductRepository productRepository, ProductMapper productMapper, CategoryService categoryService) {
         this.categoryRepository = categoryRepository;
         this.productRepository = productRepository;
         this.productMapper = productMapper;
+        this.categoryService = categoryService;
     }
 
     // CREATE
@@ -38,8 +46,7 @@ public class ProductServiceImpl implements ProductService {
         if (productToBeSaved.getId() != null) {
             throw new IllegalArgumentException("Invalid request arguments!");
         }
-        var category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("%s with the id %s not found.", "Category", categoryId)));
+        var category = categoryService.findCategoryById(categoryId);
 
         productToBeSaved.setImage("default.png");
         productToBeSaved.setCategory(category);
@@ -48,6 +55,11 @@ public class ProductServiceImpl implements ProductService {
         var savedProduct = productRepository.save(productToBeSaved);
 
         return productMapper.toDto(savedProduct);
+    }
+    @Override
+    public Product findProductById(UUID productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("%s with the id %s not found.", "Product", productId)));
     }
 
     // READ
@@ -100,8 +112,7 @@ public class ProductServiceImpl implements ProductService {
             throw new IllegalArgumentException("Operation not allowed!");
         }
 
-        var existingProduct = productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("%s with the id %s not found.", "Product", productId)));
+        var existingProduct = findProductById(productId);
 
         existingProduct.setName(productToBeUpdated.getName());
         existingProduct.setDescription(productToBeUpdated.getDescription());
@@ -114,6 +125,34 @@ public class ProductServiceImpl implements ProductService {
         productRepository.save(existingProduct);
 
         return productMapper.toDto(existingProduct);
+    }
+
+    @Override
+    public ProductResponseDto updateProductImage(UUID productId, MultipartFile image) {
+        Product existingProduct = findProductById(productId);
+
+        String path = "images/";
+        String filename;
+        try {
+            filename = uploadImage(path, image, existingProduct.getId());
+        } catch (IOException e) {
+            throw new RuntimeException("Something went wrong with the image upload.");
+        }
+
+        existingProduct.setImage(filename);
+        var updatedProduct = productRepository.save(existingProduct);
+
+        return productMapper.toDto(updatedProduct);
+    }
+
+    // DELETE
+    @Override
+    public void deleteProductById(UUID productId) {
+        if (!productRepository.existsById(productId)) {
+            throw new ResourceNotFoundException(String.format("%s with the id %s not found.", "Product", productId));
+        }
+
+        productRepository.deleteById(productId);
     }
 
     // HELPERS
@@ -129,6 +168,30 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private double calculateSpecialPrice(double actualPrice, double discount) {
+
         return actualPrice - ((discount * 0.01) * actualPrice);
+    }
+
+    private String uploadImage(String path, MultipartFile image, UUID productId) throws IOException {
+        String originalFileName = image.getOriginalFilename();
+        String extension = "";
+        if (originalFileName != null && originalFileName.contains(".")) {
+            extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+        }
+
+        var newFileName = UUID.randomUUID() + "-" + productId + extension;
+
+        String filePath = path + File.separator + newFileName;
+
+        File folder = new File(path);
+        if (!folder.exists()) {
+            if (!folder.mkdirs()) {
+                throw new IOException(String.format("Failed to create directory: %s.", path));
+            }
+        }
+
+        Files.copy(image.getInputStream(), Paths.get(filePath));
+
+        return newFileName;
     }
 }
