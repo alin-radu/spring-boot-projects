@@ -2,6 +2,7 @@ package com.dev.ecom_platform_2.domain.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Builder
 public class Product {
 
     @Id
@@ -19,7 +21,7 @@ public class Product {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "name", nullable = false, updatable = true)
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "description")
