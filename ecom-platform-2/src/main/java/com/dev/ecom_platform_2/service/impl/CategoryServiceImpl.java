@@ -1,8 +1,8 @@
 package com.dev.ecom_platform_2.service.impl;
 
-import com.dev.ecom_platform_2.domain.dtos.CategoryListResponseDto;
-import com.dev.ecom_platform_2.domain.dtos.CategoryRequestDto;
-import com.dev.ecom_platform_2.domain.dtos.CategoryResponseDto;
+import com.dev.ecom_platform_2.domain.dtos.CategoryListDto;
+import com.dev.ecom_platform_2.domain.dtos.CategoryRequest;
+import com.dev.ecom_platform_2.domain.dtos.CategoryDto;
 import com.dev.ecom_platform_2.domain.entities.Category;
 import com.dev.ecom_platform_2.exception.ResourceNotFoundException;
 import com.dev.ecom_platform_2.mapper.CategoryMapper;
@@ -26,8 +26,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     // CREATE
     @Override
-    public CategoryResponseDto createCategory(CategoryRequestDto categoryRequestDto) {
-        var categoryToBeSaved = categoryMapper.fromDto(categoryRequestDto);
+    public CategoryDto createCategory(CategoryRequest categoryRequest) {
+        var categoryToBeSaved = categoryMapper.fromDto(categoryRequest);
 
         if (categoryToBeSaved.getId() != null) {
             throw new IllegalArgumentException("Invalid category!");
@@ -52,13 +52,13 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryListResponseDto getAllCategories(Integer pageNumber, Integer pageSize, String sortBy, String sortDirection) {
+    public CategoryListDto getAllCategories(Integer pageNumber, Integer pageSize, String sortBy, String sortDirection) {
         var pageable = Utility.createPageableWithValidation(Category.class, pageNumber, pageSize, sortBy, sortDirection);
         var categoryPage = categoryRepository.findAll(pageable);
         var categories = categoryPage.getContent();
         var categoriesResponseDto = categories.stream().map(categoryMapper::toDto).toList();
 
-        return CategoryListResponseDto.builder()
+        return CategoryListDto.builder()
                 .content(categoriesResponseDto)
                 .pageNumber(categoryPage.getNumber())
                 .pageSize(categoryPage.getSize())
@@ -70,8 +70,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     // UPDATE
     @Override
-    public CategoryResponseDto updateCategory(UUID categoryId, CategoryRequestDto categoryRequestDto) {
-        var categoryToUpdate = categoryMapper.fromDto(categoryRequestDto);
+    public CategoryDto updateCategory(UUID categoryId, CategoryRequest categoryRequest) {
+        var categoryToUpdate = categoryMapper.fromDto(categoryRequest);
 
         if (categoryToUpdate.getId() == null) {
             throw new IllegalArgumentException("Category must have an ID!");

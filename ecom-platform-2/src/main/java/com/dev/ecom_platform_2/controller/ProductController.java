@@ -1,9 +1,9 @@
 package com.dev.ecom_platform_2.controller;
 
 import com.dev.ecom_platform_2.config.AppConstants;
-import com.dev.ecom_platform_2.domain.dtos.ProductListResponseDto;
-import com.dev.ecom_platform_2.domain.dtos.ProductRequestDto;
-import com.dev.ecom_platform_2.domain.dtos.ProductResponseDto;
+import com.dev.ecom_platform_2.domain.dtos.ProductListDto;
+import com.dev.ecom_platform_2.domain.dtos.ProductRequest;
+import com.dev.ecom_platform_2.domain.dtos.ProductDto;
 import com.dev.ecom_platform_2.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -24,18 +24,18 @@ public class ProductController {
 
     // CREATE
     @PostMapping("/admin/categories/{categoryId}/products")
-    public ResponseEntity<ProductResponseDto> createProduct(
+    public ResponseEntity<ProductDto> createProduct(
             @PathVariable UUID categoryId,
-            @Valid @RequestBody ProductRequestDto productRequestDto) {
+            @Valid @RequestBody ProductRequest productRequest) {
 
-        var savedProduct = productService.createProduct(categoryId, productRequestDto);
+        var savedProduct = productService.createProduct(categoryId, productRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
     }
 
     // READ
     @GetMapping("/public/products")
-    public ResponseEntity<ProductListResponseDto> getAllProducts(
+    public ResponseEntity<ProductListDto> getAllProducts(
             @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER) Integer page,
             @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE) Integer limit,
             @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_BY_ID) String sortBy,
@@ -48,7 +48,7 @@ public class ProductController {
     }
 
     @GetMapping("/public/categories/{categoryId}/products")
-    public ResponseEntity<ProductListResponseDto> getProductsByCategory(
+    public ResponseEntity<ProductListDto> getProductsByCategory(
             @PathVariable UUID categoryId,
             @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER) Integer page,
             @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE) Integer limit,
@@ -61,7 +61,7 @@ public class ProductController {
     }
 
     @GetMapping("/public/products/keyword/{keyword}")
-    public ResponseEntity<ProductListResponseDto> getProductsByKeyword(
+    public ResponseEntity<ProductListDto> getProductsByKeyword(
             @PathVariable String keyword,
             @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER) Integer page,
             @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE) Integer limit,
@@ -75,17 +75,17 @@ public class ProductController {
 
     // UPDATE
     @PutMapping("/admin/products/{productId}")
-    public ResponseEntity<ProductResponseDto> updateProduct(
+    public ResponseEntity<ProductDto> updateProduct(
             @PathVariable UUID productId,
-            @Valid @RequestBody ProductRequestDto productRequestDto
+            @Valid @RequestBody ProductRequest productRequest
     ) {
-        var productResponseDto = productService.updateProduct(productId, productRequestDto);
+        var productResponseDto = productService.updateProduct(productId, productRequest);
 
         return ResponseEntity.status(HttpStatus.OK).body(productResponseDto);
     }
 
     @PutMapping("/admin/products/{productId}/image")
-    public ResponseEntity<ProductResponseDto> updateImage(
+    public ResponseEntity<ProductDto> updateImage(
             @PathVariable UUID productId,
             @RequestParam("image") MultipartFile image
     ) {

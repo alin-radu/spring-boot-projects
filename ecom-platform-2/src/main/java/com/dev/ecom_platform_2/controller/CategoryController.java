@@ -1,9 +1,9 @@
 package com.dev.ecom_platform_2.controller;
 
 import com.dev.ecom_platform_2.config.AppConstants;
-import com.dev.ecom_platform_2.domain.dtos.CategoryListResponseDto;
-import com.dev.ecom_platform_2.domain.dtos.CategoryRequestDto;
-import com.dev.ecom_platform_2.domain.dtos.CategoryResponseDto;
+import com.dev.ecom_platform_2.domain.dtos.CategoryListDto;
+import com.dev.ecom_platform_2.domain.dtos.CategoryRequest;
+import com.dev.ecom_platform_2.domain.dtos.CategoryDto;
 import com.dev.ecom_platform_2.service.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -24,15 +24,15 @@ public class CategoryController {
 
     // CREATE
     @PostMapping("/admin/categories")
-    public ResponseEntity<CategoryResponseDto> createCategory(@Valid @RequestBody CategoryRequestDto categoryRequestDto) {
-        var savedCategory = categoryService.createCategory(categoryRequestDto);
+    public ResponseEntity<CategoryDto> createCategory(@Valid @RequestBody CategoryRequest categoryRequest) {
+        var savedCategory = categoryService.createCategory(categoryRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedCategory);
     }
 
     // READ
     @GetMapping("/public/categories")
-    public ResponseEntity<CategoryListResponseDto> getAllCategories(
+    public ResponseEntity<CategoryListDto> getAllCategories(
             @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER) Integer page,
             @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE) Integer limit,
             @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_BY_ID) String sortBy,
@@ -45,8 +45,8 @@ public class CategoryController {
 
     // UPDATE
     @PutMapping("/admin/categories/{categoryId}")
-    public ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable UUID categoryId, @Valid @RequestBody CategoryRequestDto categoryRequestDto) {
-        var updatedCategory = categoryService.updateCategory(categoryId, categoryRequestDto);
+    public ResponseEntity<CategoryDto> updateCategory(@PathVariable UUID categoryId, @Valid @RequestBody CategoryRequest categoryRequest) {
+        var updatedCategory = categoryService.updateCategory(categoryId, categoryRequest);
 
         return ResponseEntity.status(HttpStatus.OK).body(updatedCategory);
     }

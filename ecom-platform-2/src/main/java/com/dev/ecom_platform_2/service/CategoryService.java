@@ -1,16 +1,16 @@
 package com.dev.ecom_platform_2.service;
 
-import com.dev.ecom_platform_2.domain.dtos.CategoryListResponseDto;
-import com.dev.ecom_platform_2.domain.dtos.CategoryRequestDto;
-import com.dev.ecom_platform_2.domain.dtos.CategoryResponseDto;
+import com.dev.ecom_platform_2.domain.dtos.CategoryListDto;
+import com.dev.ecom_platform_2.domain.dtos.CategoryRequest;
+import com.dev.ecom_platform_2.domain.dtos.CategoryDto;
 import com.dev.ecom_platform_2.domain.entities.Category;
 
 import java.util.UUID;
 
 public interface CategoryService {
-    CategoryResponseDto createCategory(CategoryRequestDto categoryRequestDto);
+    CategoryDto createCategory(CategoryRequest categoryRequest);
     Category findCategoryById(UUID categoryId);
-    CategoryListResponseDto getAllCategories(Integer pageNumber, Integer pageSize, String sortBy, String sortDirection);
-    CategoryResponseDto updateCategory(UUID categoryId, CategoryRequestDto categoryRequestDto);
+    CategoryListDto getAllCategories(Integer pageNumber, Integer pageSize, String sortBy, String sortDirection);
+    CategoryDto updateCategory(UUID categoryId, CategoryRequest categoryRequest);
     void deleteCategory(UUID categoryId);
 }

@@ -1,7 +1,7 @@
 package com.dev.ecom_platform_2.mapper.impl;
 
-import com.dev.ecom_platform_2.domain.dtos.CategoryRequestDto;
-import com.dev.ecom_platform_2.domain.dtos.CategoryResponseDto;
+import com.dev.ecom_platform_2.domain.dtos.CategoryRequest;
+import com.dev.ecom_platform_2.domain.dtos.CategoryDto;
 import com.dev.ecom_platform_2.domain.entities.Category;
 import com.dev.ecom_platform_2.mapper.CategoryMapper;
 import org.springframework.stereotype.Component;
@@ -10,16 +10,16 @@ import org.springframework.stereotype.Component;
 public class CategoryMapperImpl implements CategoryMapper {
 
     @Override
-    public Category fromDto(CategoryRequestDto categoryRequestDto) {
+    public Category fromDto(CategoryRequest categoryRequest) {
         return new Category(
-                categoryRequestDto.getId(),
-                categoryRequestDto.getName()
+                categoryRequest.getId(),
+                categoryRequest.getName()
         );
     }
 
     @Override
-    public CategoryResponseDto toDto(Category category) {
-        return new CategoryResponseDto(
+    public CategoryDto toDto(Category category) {
+        return new CategoryDto(
                 category.getId(),
                 category.getName()
         );

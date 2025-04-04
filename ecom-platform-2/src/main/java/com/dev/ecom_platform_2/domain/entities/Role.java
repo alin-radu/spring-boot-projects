@@ -8,17 +8,19 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Entity
-@Table(name = "categories")
+@Table(name = "roles")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class Category {
+public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "name", nullable = false, unique = true, length = 50)
+    private AppRole name;
+
 }

@@ -1,9 +1,9 @@
 package com.dev.ecom_platform_2.service.impl;
 
 import com.dev.ecom_platform_2.config.ProjectSettings;
-import com.dev.ecom_platform_2.domain.dtos.ProductListResponseDto;
-import com.dev.ecom_platform_2.domain.dtos.ProductRequestDto;
-import com.dev.ecom_platform_2.domain.dtos.ProductResponseDto;
+import com.dev.ecom_platform_2.domain.dtos.ProductListDto;
+import com.dev.ecom_platform_2.domain.dtos.ProductRequest;
+import com.dev.ecom_platform_2.domain.dtos.ProductDto;
 import com.dev.ecom_platform_2.domain.entities.Product;
 import com.dev.ecom_platform_2.exception.ResourceNotFoundException;
 import com.dev.ecom_platform_2.mapper.ProductMapper;
@@ -45,9 +45,9 @@ public class ProductServiceImpl implements ProductService {
 
     // CREATE
     @Override
-    public ProductResponseDto createProduct(UUID categoryId, ProductRequestDto productRequestDto) {
+    public ProductDto createProduct(UUID categoryId, ProductRequest productRequest) {
 
-        var productToBeSaved = productMapper.fromDto(productRequestDto);
+        var productToBeSaved = productMapper.fromDto(productRequest);
 
         if (productToBeSaved.getId() != null) {
             throw new IllegalArgumentException("Invalid request arguments!");
@@ -56,7 +56,7 @@ public class ProductServiceImpl implements ProductService {
 
         productToBeSaved.setImage("default.png");
         productToBeSaved.setCategory(category);
-        double specialPrice = calculateSpecialPrice(productRequestDto.getPrice(), productRequestDto.getDiscount());
+        double specialPrice = calculateSpecialPrice(productRequest.getPrice(), productRequest.getDiscount());
         productToBeSaved.setSpecialPrice(specialPrice);
         var savedProduct = productRepository.save(productToBeSaved);
 
@@ -71,7 +71,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductListResponseDto getAllProducts(Integer pageNumber, Integer pageSize, String sortBy, String sortDirection) {
+    public ProductListDto getAllProducts(Integer pageNumber, Integer pageSize, String sortBy, String sortDirection) {
 
         var pageable = Utility.createPageableWithValidation(Product.class, pageNumber, pageSize, sortBy, sortDirection);
         var productPage = productRepository.findAll(pageable);
@@ -82,7 +82,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductListResponseDto getProductsByCategoryId(
+    public ProductListDto getProductsByCategoryId(
             UUID categoryId, Integer pageNumber, Integer pageSize, String sortBy, String sortDirection) {
 
         if (!categoryRepository.existsById(categoryId)) {
@@ -98,7 +98,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductListResponseDto getProductsByKeyword(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortDirection) {
+    public ProductListDto getProductsByKeyword(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortDirection) {
         var pageable = Utility.createPageableWithValidation(Product.class, pageNumber, pageSize, sortBy, sortDirection);
         var productPage = productRepository.findAllByNameContainingIgnoreCase(keyword, pageable);
         var products = productPage.getContent();
@@ -109,8 +109,8 @@ public class ProductServiceImpl implements ProductService {
 
     // UPDATE
     @Override
-    public ProductResponseDto updateProduct(UUID productId, ProductRequestDto productRequestDto) {
-        var productToBeUpdated = productMapper.fromDto(productRequestDto);
+    public ProductDto updateProduct(UUID productId, ProductRequest productRequest) {
+        var productToBeUpdated = productMapper.fromDto(productRequest);
 
         if (productToBeUpdated.getId() == null) {
             throw new IllegalArgumentException("Product must have an ID!");
@@ -134,7 +134,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponseDto updateProductImage(UUID productId, MultipartFile image) {
+    public ProductDto updateProductImage(UUID productId, MultipartFile image) {
         Product existingProduct = findProductById(productId);
 
         String filename;
@@ -161,8 +161,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     // HELPERS
-    private static ProductListResponseDto getProductListResponseDto(List<ProductResponseDto> productsResponseDto, Page<Product> productPage) {
-        return ProductListResponseDto.builder()
+    private static ProductListDto getProductListResponseDto(List<ProductDto> productsResponseDto, Page<Product> productPage) {
+        return ProductListDto.builder()
                 .content(productsResponseDto)
                 .pageNumber(productPage.getNumber())
                 .pageSize(productPage.getSize())

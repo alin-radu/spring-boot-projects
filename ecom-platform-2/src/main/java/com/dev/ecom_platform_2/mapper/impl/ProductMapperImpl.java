@@ -1,7 +1,7 @@
 package com.dev.ecom_platform_2.mapper.impl;
 
-import com.dev.ecom_platform_2.domain.dtos.ProductRequestDto;
-import com.dev.ecom_platform_2.domain.dtos.ProductResponseDto;
+import com.dev.ecom_platform_2.domain.dtos.ProductRequest;
+import com.dev.ecom_platform_2.domain.dtos.ProductDto;
 import com.dev.ecom_platform_2.domain.entities.Product;
 import com.dev.ecom_platform_2.mapper.ProductMapper;
 import org.modelmapper.ModelMapper;
@@ -16,15 +16,15 @@ public class ProductMapperImpl implements ProductMapper {
     }
 
     @Override
-    public Product fromDto(ProductRequestDto productRequestDto) {
+    public Product fromDto(ProductRequest productRequest) {
 
-        return modelMapper.map(productRequestDto, Product.class);
+        return modelMapper.map(productRequest, Product.class);
     }
     @Override
-    public ProductResponseDto toDto(Product product) {
+    public ProductDto toDto(Product product) {
 
-        return modelMapper.typeMap(Product.class, ProductResponseDto.class)
-                .addMapping(src -> src.getCategory().getId(), ProductResponseDto::setCategoryId)
+        return modelMapper.typeMap(Product.class, ProductDto.class)
+                .addMapping(src -> src.getCategory().getId(), ProductDto::setCategoryId)
                 .map(product);
     }
 }

@@ -13,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class CategoryRequestDto {
+public class CategoryRequest {
     private UUID id;
 
     @NotBlank(message = "Category name is required.")

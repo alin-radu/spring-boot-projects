@@ -30,10 +30,10 @@ public class Product {
     @Column(name = "image")
     private String image;
 
-    @Column(name = "quantity")
+    @Column(name = "quantity", nullable = false)
     private String quantity;
 
-    @Column(name = "price", columnDefinition = "double precision")
+    @Column(name = "price", columnDefinition = "double precision", nullable = false)
     private Double price;
 
     @Column(name = "discount", columnDefinition = "double precision")
@@ -45,4 +45,8 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+
+    @ManyToOne
+    @JoinColumn(name="seller_id")
+    private User user;
 }
