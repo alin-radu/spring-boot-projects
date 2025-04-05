@@ -22,7 +22,7 @@ public class ProductRequest {
     private String name;
 
     @NotBlank
-    @Size(min = 6, message = "Product description must contain atleast 6 characters")
+    @Size(min = 6, message = "Product description must contain at least 6 characters")
     private String description;
 
     private String image;

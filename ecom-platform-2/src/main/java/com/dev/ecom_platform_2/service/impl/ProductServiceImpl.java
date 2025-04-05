@@ -64,8 +64,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     // READ
-    @Override
-    public Product findProductById(UUID productId) {
+    private Product findProductById(UUID productId) {
         return productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("%s with the id %s not found.", "Product", productId)));
     }
