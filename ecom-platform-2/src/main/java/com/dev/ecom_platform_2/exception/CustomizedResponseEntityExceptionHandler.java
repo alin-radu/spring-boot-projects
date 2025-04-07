@@ -24,10 +24,10 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 
     // Exception
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiErrorResponse> handleException(Exception ex, HttpServletRequest request) {
+    public ResponseEntity<ApiResponse> handleException(Exception ex, HttpServletRequest request) {
         log.error("Caught Exception.", ex);
 
-        ApiErrorResponse errorResponse = ApiErrorResponse.builder()
+        ApiResponse errorResponse = ApiResponse.builder()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .message("An unexpected error occurred.")
                 .timestamp(LocalDateTime.now())
@@ -39,10 +39,10 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 
     // IllegalArgumentException
     @ExceptionHandler({IllegalArgumentException.class})
-    public ResponseEntity<ApiErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex, WebRequest request) {
+    public ResponseEntity<ApiResponse> handleIllegalArgumentException(IllegalArgumentException ex, WebRequest request) {
         log.error("Caught IllegalArgumentException.", ex);
 
-        ApiErrorResponse errorResponse = ApiErrorResponse.builder()
+        ApiResponse errorResponse = ApiResponse.builder()
                 .status(HttpStatus.BAD_REQUEST.value())
                 .message(ex.getMessage())
                 .timestamp(LocalDateTime.now())
@@ -54,10 +54,10 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 
     // MethodArgumentTypeMismatchException
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public final ResponseEntity<ApiErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex, WebRequest request) {
+    public final ResponseEntity<ApiResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex, WebRequest request) {
         log.error("Caught MethodArgumentTypeMismatchException.", ex);
 
-        ApiErrorResponse errorResponse = ApiErrorResponse.builder()
+        ApiResponse errorResponse = ApiResponse.builder()
                 .status(HttpStatus.BAD_REQUEST.value())
                 .message("Invalid request arguments!")
                 .timestamp(LocalDateTime.now())
@@ -68,10 +68,10 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 
     // IllegalStateException
     @ExceptionHandler({IllegalStateException.class})
-    public ResponseEntity<ApiErrorResponse> handleIllegalStateException(IllegalStateException ex, WebRequest request) {
+    public ResponseEntity<ApiResponse> handleIllegalStateException(IllegalStateException ex, WebRequest request) {
         log.error("Caught IllegalStateException.", ex);
 
-        ApiErrorResponse errorResponse = ApiErrorResponse.builder()
+        ApiResponse errorResponse = ApiResponse.builder()
                 .status(HttpStatus.CONFLICT.value())
                 .message(ex.getMessage())
                 .timestamp(LocalDateTime.now())
@@ -83,10 +83,10 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 
     // EntityNotFoundException
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ApiErrorResponse> handleEntityNotFoundException(EntityNotFoundException ex, WebRequest request) {
+    public ResponseEntity<ApiResponse> handleEntityNotFoundException(EntityNotFoundException ex, WebRequest request) {
         log.error("Caught EntityNotFoundException.", ex);
 
-        ApiErrorResponse errorResponse = ApiErrorResponse.builder()
+        ApiResponse errorResponse = ApiResponse.builder()
                 .status(HttpStatus.NOT_FOUND.value())
                 .message(ex.getMessage())
                 .timestamp(LocalDateTime.now())
@@ -98,10 +98,10 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 
     // ResourceNotFoundException
     @ExceptionHandler(ResourceNotFoundException.class)
-    public final ResponseEntity<ApiErrorResponse> handleItemNotFoundException(ResourceNotFoundException ex, WebRequest request) {
+    public final ResponseEntity<ApiResponse> handleItemNotFoundException(ResourceNotFoundException ex, WebRequest request) {
         log.error("Caught ResourceNotFoundException.", ex);
 
-        ApiErrorResponse errorResponse = ApiErrorResponse.builder()
+        ApiResponse errorResponse = ApiResponse.builder()
                 .status(HttpStatus.NOT_FOUND.value())
                 .message(ex.getMessage())
                 .timestamp(LocalDateTime.now())
@@ -117,18 +117,18 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         log.error("Caught MethodArgumentNotValidException.", ex);
 
         String message = "Validation failed!";
-        List<ApiErrorResponse.FieldError> errors = null;
+        List<ApiResponse.FieldError> errors = null;
         if (ex != null) {
             message = null;
             errors = ex.getBindingResult().getFieldErrors().stream()
                     .map(fieldError ->
-                            new ApiErrorResponse.FieldError(fieldError.getField(), fieldError.getDefaultMessage()))
+                            new ApiResponse.FieldError(fieldError.getField(), fieldError.getDefaultMessage()))
                     .toList();
         }
 
         String path = request != null ? request.getDescription(false) : null;
 
-        ApiErrorResponse errorResponse = ApiErrorResponse.builder()
+        ApiResponse errorResponse = ApiResponse.builder()
                 .status(HttpStatus.BAD_REQUEST.value())
                 .message(message)
                 .errors(errors)

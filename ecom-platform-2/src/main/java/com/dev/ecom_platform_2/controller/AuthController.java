@@ -3,7 +3,7 @@ package com.dev.ecom_platform_2.controller;
 import com.dev.ecom_platform_2.domain.entities.AppRole;
 import com.dev.ecom_platform_2.domain.entities.Role;
 import com.dev.ecom_platform_2.domain.entities.User;
-import com.dev.ecom_platform_2.exception.ApiErrorResponse;
+import com.dev.ecom_platform_2.exception.ApiResponse;
 import com.dev.ecom_platform_2.repositories.RoleRepository;
 import com.dev.ecom_platform_2.repositories.UserRepository;
 import com.dev.ecom_platform_2.security.jwt.JwtUtils;
@@ -58,7 +58,7 @@ public class AuthController {
                             loginRequest.getPassword())
                     );
         } catch (AuthenticationException exception) {
-            var response = ApiErrorResponse.builder()
+            var response = ApiResponse.builder()
                     .status(HttpStatus.UNAUTHORIZED.value())
                     .message("Invalid username or password.")
                     .build();
@@ -82,9 +82,9 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+    public ResponseEntity<ApiResponse> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-            var response = ApiErrorResponse.builder()
+            var response = ApiResponse.builder()
                     .status(HttpStatus.BAD_REQUEST.value())
                     .message("Error: Username is already taken!")
                     .build();
@@ -94,7 +94,7 @@ public class AuthController {
         }
 
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            var response = ApiErrorResponse.builder()
+            var response = ApiResponse.builder()
                     .status(HttpStatus.BAD_REQUEST.value())
                     .message("Error: Email is already in use!")
                     .build();
@@ -141,7 +141,7 @@ public class AuthController {
 
         userRepository.save(user);
 
-        var response = ApiErrorResponse.builder()
+        var response = ApiResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message("User registered successfully!")
                 .build();

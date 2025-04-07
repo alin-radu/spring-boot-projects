@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 @Builder
-public class ApiErrorResponse {
+public class ApiResponse {
     private int status;
     private String message;
     private List<FieldError> errors;
