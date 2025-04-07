@@ -248,7 +248,7 @@ public class WebSecurityConfig {
             // user1
             final String DEFAULT_PASSWORD = "test1234";
             final String USER_1 = "user1";
-            if (userRepository.existsByUsername(USER_1)) {
+            if (!userRepository.existsByUsername(USER_1)) {
                 User user1 = User.builder()
                         .username("user1")
                         .email("user1@example.com")
@@ -264,7 +264,7 @@ public class WebSecurityConfig {
 
             // seller1
             final String SELLER_1 = "seller1";
-            if (userRepository.existsByUsername(SELLER_1)) {
+            if (!userRepository.existsByUsername(SELLER_1)) {
                 User seller1 = User.builder()
                         .username("seller1")
                         .email("seller1@example.com")
@@ -280,7 +280,7 @@ public class WebSecurityConfig {
 
             // admin
             final String ADMIN = "admin";
-            if (userRepository.existsByUsername(ADMIN)) {
+            if (!userRepository.existsByUsername(ADMIN)) {
                 User admin = User.builder()
                         .username("admin")
                         .email("admin@example.com")

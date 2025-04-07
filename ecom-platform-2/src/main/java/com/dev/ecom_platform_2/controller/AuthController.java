@@ -58,11 +58,12 @@ public class AuthController {
                             loginRequest.getPassword())
                     );
         } catch (AuthenticationException exception) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("message", "Bad credentials");
-            map.put("status", false);
+            var response = ApiErrorResponse.builder()
+                    .status(HttpStatus.UNAUTHORIZED.value())
+                    .message("Invalid username or password.")
+                    .build();
 
-            return new ResponseEntity<Object>(map, HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
