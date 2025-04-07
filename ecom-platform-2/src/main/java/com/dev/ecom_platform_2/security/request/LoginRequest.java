@@ -1,4 +1,4 @@
-package com.dev.ecom_platform_2.security.jwt;
+package com.dev.ecom_platform_2.security.request;
 
 import lombok.*;
 

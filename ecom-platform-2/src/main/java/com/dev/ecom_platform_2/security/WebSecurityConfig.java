@@ -29,7 +29,27 @@ import java.util.Set;
 
 @Configuration
 @EnableWebSecurity
-//@EnableMethodSecurity
+//@EnableMethodSecurity(prePostEnabled = true)
+//@EnableMethodSecurity enables method-level security annotations, such as @PreAuthorize, @Secured.
+//
+//@PreAuthorize: Used to express security rules before a method is executed.
+//@PreAuthorize("hasRole('ADMIN')")
+//public void adminMethod() {
+//    // only accessible by users with the 'ADMIN' role
+//}
+//
+//@Secured: Specifies a list of roles allowed to access the method.
+//@Secured("ROLE_ADMIN")
+//public void adminMethod() {
+//    // only accessible by users with the 'ROLE_ADMIN' role
+//}
+//
+//@RolesAllowed: Another way to restrict method access to specific roles (common in Java EE).
+//@RolesAllowed("ROLE_USER")
+//public void userMethod() {
+//    // only accessible by users with the 'ROLE_USER' role
+//}
+
 public class WebSecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsService;
@@ -39,11 +59,31 @@ public class WebSecurityConfig {
         this.unauthorizedHandler = unauthorizedHandler;
     }
 
+    /**
+     * Defines a bean for the JWT authentication token filter.
+     * <p>
+     * This filter intercepts incoming HTTP requests and checks for a valid
+     * JWT token in the Authorization header. If a valid token is found,
+     * it sets the authentication in the security context.
+     *
+     * @return an instance of {@link AuthTokenFilter}
+     */
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter();
     }
 
+    /**
+     * Configures and provides a {@link DaoAuthenticationProvider} bean.
+     * <p>
+     * The {@code DaoAuthenticationProvider} is used by Spring Security to retrieve
+     * user details and validate credentials during authentication, to authenticate users.
+     * <p>
+     * Used when we what to use a custom UserDetailsServiceImpl.
+     * It is configured with a custom {@code UserDetailsService} and a password encoder.
+     * <p>
+     * * @return a configured instance of {@link DaoAuthenticationProvider}
+     */
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -54,6 +94,17 @@ public class WebSecurityConfig {
         return authProvider;
     }
 
+    /**
+     * Exposes the {@link AuthenticationManager} bean.
+     * <p>
+     * Retrieves the {@code AuthenticationManager} from the provided
+     * {@link AuthenticationConfiguration}.
+     * This manager is responsible for processing authentication requests.
+     *
+     * @param authConfig the authentication configuration from which to retrieve the manager
+     * @return the {@link AuthenticationManager} used by Spring Security
+     * @throws Exception if the authentication manager cannot be retrieved
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
@@ -64,40 +115,110 @@ public class WebSecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Configures and exposes the Spring Security filter chain.
+     * <p>
+     * This method defines the core security configuration for the application, including:
+     *
+     * <ul>
+     *   <li><b>CSRF Disabled:</b> CSRF protection is disabled since the application is stateless and likely uses tokens for authentication.</li>
+     *   <li><b>Exception Handling:</b> A custom {@code AuthenticationEntryPoint} is used to handle unauthorized access attempts.</li>
+     *   <li><b>Stateless Sessions:</b> Session creation is disabled to enforce token-based authentication (e.g., JWT).</li>
+     *   <li><b>Public Endpoints:</b> Specific endpoints (auth APIs, documentation, H2 console, images, etc.) are accessible without authentication.</li>
+     *   <li><b>Protected Endpoints:</b> All other endpoints require authentication.</li>
+     *   <li><b>Authentication Provider:</b> A custom {@link DaoAuthenticationProvider} is registered to handle authentication logic using a user details service and password encoder.</li>
+     *   <li><b>JWT Filter:</b> A custom JWT token filter is added to the security filter chain before the default {@link UsernamePasswordAuthenticationFilter}.</li>
+     *   <li><b>Frame Options:</b> Allows use of the H2 console by setting frame options to {@code SAMEORIGIN}.</li>
+     * </ul>
+     *
+     * @param http the {@link HttpSecurity} to configure
+     * @return the configured {@link SecurityFilterChain}
+     * @throws Exception if an error occurs while building the security configuration
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        http
+                // disable CSRF for stateless APIs
+                .csrf(AbstractHttpConfigurer::disable)
+//                .csrf(csrf -> csrf.ignoringRequestMatchers(new CustomCsrfIgnoreRequestMatcher()))
+
+                // handle unauthorized access with a custom entry point
+                .exceptionHandling(exception ->
+                        exception.authenticationEntryPoint(unauthorizedHandler)
+                )
+
+                // use stateless session management
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+
+                // define authorization rules
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/auth/**").permitAll()
-                                .requestMatchers("/v3/api-docs/**").permitAll()
-                                .requestMatchers("/h2-console/**").permitAll()
-                                //.requestMatchers("/api/admin/**").permitAll()
-                                .requestMatchers("/api/public/**").permitAll()
-                                .requestMatchers("/swagger-ui/**").permitAll()
-                                .requestMatchers("/api/test/**").permitAll()
-                                .requestMatchers("/images/**").permitAll()
+                        auth
+                                .requestMatchers(
+                                        "/api/auth/**",
+                                        "/api/public/**",
+                                        "/api/test/**",
+                                        "/images/**",
+                                        "/h2-console/**"
+                                        // Swagger-related paths are now handled by WebSecurityCustomizer and don't need to be here
+                                ).permitAll()
+                                .requestMatchers("/api/admin/**").permitAll() // need to be disabled for prod
                                 .anyRequest().authenticated()
+                )
+
+                // register authentication provider
+                .authenticationProvider(authenticationProvider())
+
+                // add JWT authentication filter before the default username/password filter
+                .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
+
+                // allow H2 console by permitting same-origin framing
+                .headers(headers ->
+                        headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
                 );
-
-        http.authenticationProvider(authenticationProvider());
-
-        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-        http.headers(headers -> headers.frameOptions(
-                HeadersConfigurer.FrameOptionsConfig::sameOrigin));
 
         return http.build();
     }
 
+//    public static class CustomCsrfIgnoreRequestMatcher implements RequestMatcher {
+    /// /        private final List<RequestMatcher> matchers = List.of(
+    /// /                new AntPathRequestMatcher("/api/**")
+    /// ///                new AntPathRequestMatcher("/webhook/**")
+    /// /        );
+//
+//        private final List<RequestMatcher> matchers = List.of(
+//                new AntPathRequestMatcher("/api/v1/admin/categories", HttpMethod.POST.name())
+//        );
+//
+//        @Override
+//        public boolean matches(HttpServletRequest request) {
+//            return matchers.stream().anyMatch(matcher -> matcher.matches(request));
+//        }
+//    }
+
+    /**
+     * Configures Spring Security to ignore security filters at global level.
+     * These paths are made publicly accessible
+     * without requiring authentication or any security-related checks.
+     * <p>
+     * These exclusions ensure that users can freely access the Swagger UI and API documentation
+     * without needing to authenticate or go through security filters.
+     *
+     * @return A WebSecurityCustomizer instance that configures the security to ignore
+     * the specified Swagger-related paths.
+     */
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web -> web.ignoring().requestMatchers("/v2/api-docs",
-                "/configuration/ui",
-                "/swagger-resources/**",
-                "/configuration/security",
-                "/swagger-ui.html",
-                "/webjars/**"));
+        return (web ->
+                web.ignoring().requestMatchers(
+                        "/v2/api-docs",              // Swagger API docs
+                        "/configuration/ui",         // Swagger UI config
+                        "/swagger-resources/**",     // Swagger resources
+                        "/configuration/security",   // Swagger security config
+                        "/swagger-ui.html",          // Swagger UI page
+                        "/webjars/**"                // Swagger UI webjars
+                ));
     }
 
     @Bean
