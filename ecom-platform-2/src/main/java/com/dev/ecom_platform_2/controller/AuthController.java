@@ -86,7 +86,8 @@ public class AuthController {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             var response = ApiErrorResponse.builder()
                     .status(HttpStatus.BAD_REQUEST.value())
-                    .message("Error: Username is already taken!");
+                    .message("Error: Username is already taken!")
+                    .build();
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 
@@ -95,7 +96,8 @@ public class AuthController {
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             var response = ApiErrorResponse.builder()
                     .status(HttpStatus.BAD_REQUEST.value())
-                    .message("Error: Email is already in use!");
+                    .message("Error: Email is already in use!")
+                    .build();
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
@@ -141,7 +143,8 @@ public class AuthController {
 
         var response = ApiErrorResponse.builder()
                 .status(HttpStatus.OK.value())
-                .message("User registered successfully!");
+                .message("User registered successfully!")
+                .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
