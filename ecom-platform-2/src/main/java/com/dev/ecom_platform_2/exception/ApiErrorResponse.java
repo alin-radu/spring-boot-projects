@@ -8,17 +8,17 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
+@Builder
 public class ApiErrorResponse {
     private int status;
     private String message;
     private List<FieldError> errors;
 
-    private LocalDateTime timestamp;  // Timestamp of when the error occurred
-    private String path;             // The request path that caused the error
+    private LocalDateTime timestamp;  // timestamp of when the error occurred
+    private String path;             // the request path that caused the error
 
     @Data
     @Builder

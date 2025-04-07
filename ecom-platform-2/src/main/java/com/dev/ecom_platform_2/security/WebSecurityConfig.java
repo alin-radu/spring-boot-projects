@@ -156,12 +156,11 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth ->
                         auth
                                 .requestMatchers(
-                                        "/api/auth/**",
-                                        "/api/public/**",
-                                        "/api/test/**",
-                                        "/images/**",
-                                        "/h2-console/**"
-                                        // Swagger-related paths are now handled by WebSecurityCustomizer and don't need to be here
+                                        "/api/v1/auth/**",
+                                        "/api/v1/public/**",
+                                        "/api/v1/test/**",
+                                        "/images/**"
+                                        // swagger-related paths are now handled by WebSecurityCustomizer and don't need to be here
                                 ).permitAll()
                                 .requestMatchers("/api/admin/**").permitAll() // need to be disabled for prod
                                 .anyRequest().authenticated()
@@ -224,7 +223,6 @@ public class WebSecurityConfig {
     @Bean
     public CommandLineRunner initData(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
-            // Retrieve or create roles
             Role userRole = roleRepository.findByName(AppRole.ROLE_USER)
                     .orElseGet(() -> {
                         Role newUserRole = new Role(AppRole.ROLE_USER);
@@ -247,49 +245,51 @@ public class WebSecurityConfig {
             Set<Role> sellerRoles = Set.of(sellerRole);
             Set<Role> adminRoles = Set.of(userRole, sellerRole, adminRole);
 
-            // Create users if not already present
-            if (userRepository.existsByUsername("user1")) {
+            // user1
+            final String DEFAULT_PASSWORD = "test1234";
+            final String USER_1 = "user1";
+            if (userRepository.existsByUsername(USER_1)) {
                 User user1 = User.builder()
                         .username("user1")
                         .email("user1@example.com")
-                        .password(passwordEncoder.encode("test1234"))
+                        .password(passwordEncoder.encode(DEFAULT_PASSWORD))
                         .build();
 
                 userRepository.save(user1);
             }
-
-            if (userRepository.existsByUsername("seller1")) {
-                User seller1 = User.builder()
-                        .username("seller1")
-                        .email("seller1@example.com")
-                        .password(passwordEncoder.encode("test1234"))
-                        .build();
-
-                userRepository.save(seller1);
-            }
-
-            if (userRepository.existsByUsername("admin")) {
-                User admin = User.builder()
-                        .username("admin")
-                        .email("admin@example.com")
-                        .password(passwordEncoder.encode("test1234"))
-                        .build();
-
-                userRepository.save(admin);
-            }
-
-            // Update roles for existing users
-            userRepository.findByUsername("user1").ifPresent(user -> {
+            userRepository.findByUsername(USER_1).ifPresent(user -> {
                 user.setRoles(userRoles);
                 userRepository.save(user);
             });
 
-            userRepository.findByUsername("seller1").ifPresent(seller -> {
+            // seller1
+            final String SELLER_1 = "seller1";
+            if (userRepository.existsByUsername(SELLER_1)) {
+                User seller1 = User.builder()
+                        .username("seller1")
+                        .email("seller1@example.com")
+                        .password(passwordEncoder.encode(DEFAULT_PASSWORD))
+                        .build();
+
+                userRepository.save(seller1);
+            }
+            userRepository.findByUsername(SELLER_1).ifPresent(seller -> {
                 seller.setRoles(sellerRoles);
                 userRepository.save(seller);
             });
 
-            userRepository.findByUsername("admin").ifPresent(admin -> {
+            // admin
+            final String ADMIN = "admin";
+            if (userRepository.existsByUsername(ADMIN)) {
+                User admin = User.builder()
+                        .username("admin")
+                        .email("admin@example.com")
+                        .password(passwordEncoder.encode(DEFAULT_PASSWORD))
+                        .build();
+
+                userRepository.save(admin);
+            }
+            userRepository.findByUsername(ADMIN).ifPresent(admin -> {
                 admin.setRoles(adminRoles);
                 userRepository.save(admin);
             });
