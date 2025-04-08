@@ -21,12 +21,12 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -58,48 +58,50 @@ public class AuthController {
                             loginRequest.getPassword())
                     );
         } catch (AuthenticationException exception) {
+            var httpStatus = HttpStatus.UNAUTHORIZED.value();
             var response = ApiResponse.builder()
-                    .status(HttpStatus.UNAUTHORIZED.value())
+                    .status(httpStatus)
                     .message("Invalid username or password.")
                     .build();
 
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            return ResponseEntity.status(httpStatus).body(response);
         }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        String jwtToken = jwtUtils.generateTokenFromUsername(userDetails);
+        var httpStatus = HttpStatus.OK.value();
+        UserInfoResponse response = UserInfoResponse.builder()
+                .id(userDetails.getId())
+                .username(userDetails.getUsername())
+                .roles(getRolesFromUserDetails(userDetails.getAuthorities()))
+                .jwtToken(jwtUtils.generateTokenFromUsername(userDetails))
+                .build();
 
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
-
-        UserInfoResponse response = new UserInfoResponse(userDetails.getId(), userDetails.getUsername(), roles, jwtToken);
-
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(httpStatus).body(response);
     }
 
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+            var httpStatus = HttpStatus.CONFLICT.value();
             var response = ApiResponse.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
+                    .status(httpStatus)
                     .message("Error: Username is already taken!")
                     .build();
 
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            return ResponseEntity.status(httpStatus).body(response);
 
         }
 
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+            var httpStatus = HttpStatus.CONFLICT.value();
             var response = ApiResponse.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
+                    .status(httpStatus)
                     .message("Error: Email is already in use!")
                     .build();
 
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            return ResponseEntity.status(httpStatus).body(response);
         }
 
         User user = User.builder()
@@ -109,6 +111,70 @@ public class AuthController {
                 .build();
 
         Set<String> rolesFromTheRequest = signUpRequest.getRole();
+        Set<Role> roles = getRolesFromRequest(rolesFromTheRequest, roleRepository);
+
+        user.setRoles(roles);
+
+        userRepository.save(user);
+
+        var httpStatus = HttpStatus.OK.value();
+        var response = ApiResponse.builder()
+                .status(httpStatus)
+                .message("User registered successfully!")
+                .build();
+
+        return ResponseEntity.status(httpStatus).body(response);
+    }
+
+    @GetMapping("/username")
+    public ResponseEntity<String> currentUserName(Authentication authentication) {
+        var httpStatus = HttpStatus.OK.value();
+        System.out.println(authentication);
+        if (authentication != null)
+            return ResponseEntity.status(httpStatus).body(authentication.getName());
+        else
+            return ResponseEntity.status(httpStatus).body(null);
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<?> getUserDetails(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            var httpStatus = HttpStatus.UNAUTHORIZED.value();
+            var response = ApiResponse.builder()
+                    .status(httpStatus)
+                    .message("Unauthorized: No user is authenticated.")
+                    .build();
+
+            return ResponseEntity.status(httpStatus).body(response);
+        }
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
+        List<String> roles = getRolesFromUserDetails(userDetails.getAuthorities());
+
+        var httpStatus = HttpStatus.OK.value();
+        UserInfoResponse response = UserInfoResponse.builder()
+                .id(userDetails.getId())
+                .username(userDetails.getUsername())
+                .roles(roles)
+                .build();
+
+        return ResponseEntity.status(httpStatus).body(response);
+    }
+
+    @PostMapping("/signout")
+    public ResponseEntity<ApiResponse> signoutUser() {
+        var httpStatus = HttpStatus.CONFLICT.value();
+        var response = ApiResponse.builder()
+                .status(httpStatus)
+                .message("Error: Username is already taken!")
+                .build();
+
+        return ResponseEntity.status(httpStatus).body(response);
+    }
+
+    // HELPERS
+    private Set<Role> getRolesFromRequest(Set<String> rolesFromTheRequest, RoleRepository roleRepository) {
         Set<Role> roles = new HashSet<>();
 
         if (rolesFromTheRequest == null) {
@@ -137,15 +203,14 @@ public class AuthController {
                 }
             });
         }
-        user.setRoles(roles);
 
-        userRepository.save(user);
+        return roles;
+    }
 
-        var response = ApiResponse.builder()
-                .status(HttpStatus.OK.value())
-                .message("User registered successfully!")
-                .build();
+    private List<String> getRolesFromUserDetails(Collection<? extends GrantedAuthority> authorities) {
+        return authorities.stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
 
-        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
