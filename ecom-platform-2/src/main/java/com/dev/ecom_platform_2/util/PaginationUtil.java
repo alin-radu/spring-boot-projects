@@ -1,4 +1,4 @@
-package com.dev.ecom_platform_2.utilities;
+package com.dev.ecom_platform_2.util;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -7,7 +7,7 @@ import org.springframework.data.domain.Sort;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
-public class Utility {
+public class PaginationUtil {
 
     public static Pageable createPageableWithValidation(
             Class<?> clazz, Integer pageNumber, Integer pageSize, String sortBy, String sortDirection) {

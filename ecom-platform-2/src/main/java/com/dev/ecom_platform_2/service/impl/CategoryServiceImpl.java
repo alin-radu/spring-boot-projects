@@ -8,7 +8,7 @@ import com.dev.ecom_platform_2.exception.ResourceNotFoundException;
 import com.dev.ecom_platform_2.mapper.CategoryMapper;
 import com.dev.ecom_platform_2.repositories.CategoryRepository;
 import com.dev.ecom_platform_2.service.CategoryService;
-import com.dev.ecom_platform_2.utilities.Utility;
+import com.dev.ecom_platform_2.util.PaginationUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -53,7 +53,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryListDto getAllCategories(Integer pageNumber, Integer pageSize, String sortBy, String sortDirection) {
-        var pageable = Utility.createPageableWithValidation(Category.class, pageNumber, pageSize, sortBy, sortDirection);
+        var pageable = PaginationUtil.createPageableWithValidation(Category.class, pageNumber, pageSize, sortBy, sortDirection);
         var categoryPage = categoryRepository.findAll(pageable);
         var categories = categoryPage.getContent();
         var categoriesResponseDto = categories.stream().map(categoryMapper::toDto).toList();

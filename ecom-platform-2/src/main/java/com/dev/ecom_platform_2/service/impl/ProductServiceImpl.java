@@ -12,7 +12,7 @@ import com.dev.ecom_platform_2.repositories.ProductRepository;
 import com.dev.ecom_platform_2.service.CategoryService;
 import com.dev.ecom_platform_2.service.FileService;
 import com.dev.ecom_platform_2.service.ProductService;
-import com.dev.ecom_platform_2.utilities.Utility;
+import com.dev.ecom_platform_2.util.PaginationUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,6 +47,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDto createProduct(UUID categoryId, ProductRequest productRequest) {
 
+        System.out.println(productRequest);
+
         var productToBeSaved = productMapper.fromDto(productRequest);
 
         if (productToBeSaved.getId() != null) {
@@ -57,6 +59,7 @@ public class ProductServiceImpl implements ProductService {
         productToBeSaved.setImage("default.png");
         productToBeSaved.setCategory(category);
         double specialPrice = calculateSpecialPrice(productRequest.getPrice(), productRequest.getDiscount());
+        System.out.println(specialPrice);
         productToBeSaved.setSpecialPrice(specialPrice);
         var savedProduct = productRepository.save(productToBeSaved);
 
@@ -72,7 +75,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductListDto getAllProducts(Integer pageNumber, Integer pageSize, String sortBy, String sortDirection) {
 
-        var pageable = Utility.createPageableWithValidation(Product.class, pageNumber, pageSize, sortBy, sortDirection);
+        var pageable = PaginationUtil.createPageableWithValidation(Product.class, pageNumber, pageSize, sortBy, sortDirection);
         var productPage = productRepository.findAll(pageable);
         var products = productPage.getContent();
         var productsResponseDto = products.stream().map(productMapper::toDto).toList();
@@ -88,7 +91,7 @@ public class ProductServiceImpl implements ProductService {
             throw new ResourceNotFoundException(String.format("%s with the id %s not found.", "Category", categoryId));
         }
 
-        var pageable = Utility.createPageableWithValidation(Product.class, pageNumber, pageSize, sortBy, sortDirection);
+        var pageable = PaginationUtil.createPageableWithValidation(Product.class, pageNumber, pageSize, sortBy, sortDirection);
         var productPage = productRepository.findAllByCategoryId(categoryId, pageable);
         var products = productPage.getContent();
         var productsResponseDto = products.stream().map(productMapper::toDto).toList();
@@ -98,7 +101,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductListDto getProductsByKeyword(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortDirection) {
-        var pageable = Utility.createPageableWithValidation(Product.class, pageNumber, pageSize, sortBy, sortDirection);
+        var pageable = PaginationUtil.createPageableWithValidation(Product.class, pageNumber, pageSize, sortBy, sortDirection);
         var productPage = productRepository.findAllByNameContainingIgnoreCase(keyword, pageable);
         var products = productPage.getContent();
         var productsResponseDto = products.stream().map(productMapper::toDto).toList();
@@ -172,6 +175,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private double calculateSpecialPrice(double actualPrice, double discount) {
-        return actualPrice - ((discount * 0.01) * actualPrice);
+        if (discount < 0 || discount > 100) {
+            throw new IllegalArgumentException("Discount must be between 0 and 100");
+        }
+        return actualPrice * (1 - discount / 100);
     }
 }

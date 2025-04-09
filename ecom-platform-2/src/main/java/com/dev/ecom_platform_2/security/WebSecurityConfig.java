@@ -162,7 +162,7 @@ public class WebSecurityConfig {
                                         "/images/**"
                                         // swagger-related paths are now handled by WebSecurityCustomizer and don't need to be here
                                 ).permitAll()
-                                .requestMatchers("/api/admin/**").permitAll() // need to be disabled for prod
+                                .requestMatchers("/api/v1/admin/**").permitAll() // need to be disabled for prod
                                 .anyRequest().authenticated()
                 )
 
