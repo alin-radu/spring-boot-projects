@@ -1,5 +1,6 @@
 package com.dev.ecom_platform_2.controller;
 
+import com.dev.ecom_platform_2.config.AppConstants;
 import com.dev.ecom_platform_2.domain.dtos.CartDto;
 import com.dev.ecom_platform_2.domain.entities.Cart;
 import com.dev.ecom_platform_2.exception.APIException;
@@ -65,23 +66,23 @@ public class CartController {
         return ResponseEntity.status(HttpStatus.OK).body(cartDto);
     }
 
-//    // UPDATE
-//    @PutMapping("/cart/products/{productId}/quantity/{operation}")
-//    public ResponseEntity<CartDto> updateCartProduct(@PathVariable Long productId,
-//                                                     @PathVariable String operation) {
-//
-//        CartDto cartDto = cartService.updateProductQuantityInCart(productId,
-//                operation.equalsIgnoreCase("delete") ? -1 : 1);
-//
-//        return new ResponseEntity<CartDto>(cartDto, HttpStatus.OK);
-//    }
-//
-//    // DELETE
-//    @DeleteMapping("/carts/{cartId}/product/{productId}")
-//    public ResponseEntity<String> deleteProductFromCart(@PathVariable Long cartId,
-//                                                        @PathVariable Long productId) {
-//        String status = cartService.deleteProductFromCart(cartId, productId);
-//
-//        return new ResponseEntity<String>(status, HttpStatus.OK);
-//    }
+    //    // UPDATE
+    @PutMapping("/cart/products/{productId}/quantity/{operation}")
+    public ResponseEntity<CartDto> updateProductQuantityInCart(
+            @PathVariable UUID productId, @PathVariable String operation) {
+        var quantity = operation.equalsIgnoreCase(AppConstants.CART_ACTION_DELETE) ? -1 : 1;
+        CartDto cartDto = cartService.updateProductQuantityInCart(productId, quantity);
+
+        return ResponseEntity.status(HttpStatus.OK).body(cartDto);
+    }
+
+    // DELETE
+    @DeleteMapping("/carts/{cartId}/product/{productId}")
+    public ResponseEntity<Void> deleteProductFromCart(
+            @PathVariable UUID cartId, @PathVariable UUID productId) {
+        cartService.deleteProductFromCart(cartId, productId);
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
 }
