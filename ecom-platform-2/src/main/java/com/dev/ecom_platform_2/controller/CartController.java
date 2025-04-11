@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/public")
 public class CartController {
 
     private final CartService cartService;
@@ -31,7 +31,7 @@ public class CartController {
     }
 
     // CREATE
-    @PostMapping("/public/carts/products/{productId}/quantity/{quantity}")
+    @PostMapping("/carts/products/{productId}/quantity/{quantity}")
     public ResponseEntity<CartDto> addProductToCart(
             @PathVariable UUID productId, @PathVariable Integer quantity) {
 
@@ -41,14 +41,14 @@ public class CartController {
     }
 
     // READ
-    @GetMapping("/public/carts")
+    @GetMapping("/carts")
     public ResponseEntity<List<CartDto>> getAllCarts() {
         List<CartDto> cartDtos = cartService.getAllCarts();
 
         return ResponseEntity.status(HttpStatus.FOUND).body(cartDtos);
     }
 
-    @GetMapping("/public/carts/users/cart")
+    @GetMapping("/carts/users/cart")
     public ResponseEntity<CartDto> getCartByUserId() {
         if (!authUtil.isAuthenticatedUser()) {
             throw new APIException("Please authenticate to use this functionality.");
@@ -66,7 +66,7 @@ public class CartController {
         return ResponseEntity.status(HttpStatus.OK).body(cartDto);
     }
 
-    //    // UPDATE
+    // UPDATE
     @PutMapping("/cart/products/{productId}/quantity/{operation}")
     public ResponseEntity<CartDto> updateProductQuantityInCart(
             @PathVariable UUID productId, @PathVariable String operation) {

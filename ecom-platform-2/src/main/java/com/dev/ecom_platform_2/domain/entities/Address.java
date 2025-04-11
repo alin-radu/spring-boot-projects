@@ -4,10 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -22,26 +19,25 @@ public class Address {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "street", nullable = false)
+    @Column(name = "street")
     private String street;
 
-    @Column(name = "building_name", nullable = false)
+    @Column(name = "building_name")
     private String buildingName;
 
     @Column(name = "city", nullable = false)
     private String city;
 
-    @Column(name = "state", nullable = false)
+    @Column(name = "state")
     private String state;
 
     @Column(name = "country", nullable = false)
     private String country;
 
-    @Column(name = "zip_code", nullable = false)
+    @Column(name = "zip_code")
     private String zipCode;
 
-    @ToString.Exclude
-    @ManyToMany(mappedBy = "addresses")
-    private List<User> users = new ArrayList<>();
-
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

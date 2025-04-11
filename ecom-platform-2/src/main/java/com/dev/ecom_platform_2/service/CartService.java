@@ -16,7 +16,6 @@ public interface CartService {
     CartDto updateProductQuantityInCart(UUID productId, Integer quantity);
 
     void deleteProductFromCart(UUID cartId, UUID productId);
-
     void updateProductInCarts(UUID cartId, UUID productId);
     void createOrUpdateCartWithItems(List<CartItemDto> cartItems);
 }
