@@ -82,7 +82,7 @@ public class CartController {
             @PathVariable UUID cartId, @PathVariable UUID productId) {
         cartService.deleteProductFromCart(cartId, productId);
 
-        System.out.println("test");
+        System.out.println("test1");
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
